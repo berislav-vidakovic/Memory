@@ -1,0 +1,12 @@
+﻿@page "/health"
+@inject Frontend.Services.HealthApiService HealthService
+
+@code {
+    private Frontend.ViewModels.HealthViewModel? vm;
+
+    protected override async Task OnInitializedAsync()
+    {
+        vm = new Frontend.ViewModels.HealthViewModel(HealthService);
+        await vm.LoadHealthAsync();
+    }
+}

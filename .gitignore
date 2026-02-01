@@ -1,0 +1,39 @@
+# Build outputs
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+*.rsuser
+
+# Visual Studio
+.vs/
+
+# Rider / JetBrains
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# NuGet
+*.nupkg
+.nuget/
+
+# Node (if Blazor WASM tooling or frontend assets used)
+node_modules/
+
+# Publish output
+publish/
+
+# Secrets
+appsettings.Development.json
+secrets.json
+
+# Temporary / backups
+*.tmp
+*.bak
