@@ -15,5 +15,8 @@ builder.Services.AddScoped(sp => new HttpClient());
 // Add HealthApiService
 builder.Services.AddScoped<HealthApiService>();
 
+builder.Services.AddSingleton<ChatSignalRService>();
+
+
 
 await builder.Build().RunAsync();

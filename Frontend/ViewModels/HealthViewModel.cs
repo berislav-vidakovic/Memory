@@ -13,22 +13,48 @@ MVVM Architecture
 
 public class HealthViewModel
 {
-    private readonly HealthApiService _service;
+    private readonly HealthApiService _healthService;
+    private readonly ChatSignalRService _chatService;
 
     public string StatusMessage { get; private set; } = "Checking backend...";
+    public string CurrentMessage { get; set; } = "";
 
     public HealthResponseDto? Health { get; private set; }
 
-    public HealthViewModel(HealthApiService service)
+    public event Action? OnStateChanged;
+
+
+    public HealthViewModel(
+        HealthApiService healthService,
+        ChatSignalRService chatService)
     {
-        _service = service;
+        _healthService = healthService;
+        _chatService = chatService;
+
+        _chatService.OnMessageReceived += msg =>
+        {
+            CurrentMessage = msg;
+            OnStateChanged?.Invoke(); // notify UI
+        };
     }
 
     public async Task LoadHealthAsync()
     {
-        Health = await _service.GetHealthAsync();
+        Health = await _healthService.GetHealthAsync();
         StatusMessage = Health != null
             ? $"...Connected to backend! <br />Backend is running on https://localhost:5206"
             : "Failed to connect to backend";
+
+        OnStateChanged?.Invoke();
+    }
+
+    public async Task StartChatAsync()
+    {
+        await _chatService.StartAsync();
+    }
+
+    public async Task SendMessageAsync()
+    {
+        await _chatService.SendMessageAsync(CurrentMessage);
     }
 }

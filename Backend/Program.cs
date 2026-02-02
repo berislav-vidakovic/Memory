@@ -13,6 +13,7 @@ builder.Services.AddSwaggerGen();
 // https://localhost:5206/swagger
 // https://localhost:5206/swagger/v1/swagger.json
 
+builder.Services.AddSignalR();
 
 
 
@@ -33,6 +34,7 @@ app.UseCors("FrontendPolicy");
 
 
 
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -43,6 +45,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.MapHub<Backend.Hubs.ChatHub>("/hubs/chat");
+
+
 
 app.MapGet("/api/health", () =>
 {
