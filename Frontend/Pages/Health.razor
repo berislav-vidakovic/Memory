@@ -1,6 +1,21 @@
 ﻿@page "/health"
 @inject Frontend.Services.HealthApiService HealthService
 
+<PageTitle>Health check</PageTitle>
+
+<h1>Health check</h1>
+
+@if (vm == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <p>@((MarkupString)vm.StatusMessage)</p>
+}
+
+
+
 @code {
     private Frontend.ViewModels.HealthViewModel? vm;
 
@@ -8,5 +23,6 @@
     {
         vm = new Frontend.ViewModels.HealthViewModel(HealthService);
         await vm.LoadHealthAsync();
+        StateHasChanged(); // ensure UI refresh
     }
 }
