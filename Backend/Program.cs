@@ -1,6 +1,15 @@
 using Shared.DTOs;
+using Backend.Data;
+using Microsoft.EntityFrameworkCore;
+
 
 var builder = WebApplication.CreateBuilder(args);
+
+
+// Add DbContext
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer("Server=barryonweb.com,1433;Database=Memory;User Id=SA;Password=Abc1234!;TrustServerCertificate=True;"));
+
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -42,11 +51,29 @@ if (app.Environment.IsDevelopment())
     //app.MapOpenApi();  // serves both the OpenAPI JSON and the classic UI
     app.UseSwagger();               // serves JSON at /swagger/v1/swagger.json
     app.UseSwaggerUI();
+    Console.WriteLine("============Hello world from Dev Env!===============");
 }
 
 app.UseHttpsRedirection();
 
 app.MapHub<Backend.Hubs.ChatHub>("/hubs/chat");
+
+
+// Startup logic: read first Health record
+using (var scope = app.Services.CreateScope())
+{
+    Console.WriteLine("===========Access DbContext .... =============================");
+
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var firstHealth = await db.Healths.FirstOrDefaultAsync();
+
+    Console.WriteLine("===========Get Health TOP 1 ===================================");
+
+    if (firstHealth != null)
+        Console.WriteLine($"Health message from DB: {firstHealth.Msg}");
+    else
+        Console.WriteLine("No health records found.");
+}
 
 
 
