@@ -1,31 +1,32 @@
 ## MEMORY - Single player and Multi player game
 
-<img src = "Docs/images/Memory.jpg" style="margin-right: 15px;" /> 
+<img src = "Docs/images/memory.jpg" style="margin-right: 15px;" /> 
 
 ---
 ### Development Tech Stack
 
 
 
-<img src = "Docs/images/win11.png" style="margin-right: 15px;" /> 
-<img src = "Docs/images/vs.png" style="margin-right: 15px;" /> 
-<img src = "Docs/images/cs.png" style="margin-right: 15px;" /> 
-<img src = "Docs/images/DotNet.png" style="margin-right: 15px;" /> 
-<img src = "Docs/images/blazor.png" style="margin-right: 15px;" /> 
-<img src = "Docs/images/ws.png" style="margin-right: 15px;" /> 
-<img src = "Docs/images/sigR.jpg" style="margin-right: 15px;" /> 
-<img src = "Docs/images/aspnet.png" style="margin-right: 15px;" /> 
-<img src = "Docs/images/sqlserver.jpg" style="margin-right: 15px;" /> 
+![image info](Docs/images/win11.png)
+![image info](Docs/images/vs.png) 
+![image info](Docs/images/cs.png) 
+![image info](Docs/images/DotNet.png) 
+![image info](Docs/images/blazor.png) 
+![image info](Docs/images/ws.png) 
+![image info](Docs/images/sigR.jpg) 
+![image info](Docs/images/aspnet.png) 
+![image info](Docs/images/sqlserver.jpg) 
 
 ---
 ### Deployment Tech Stack
 
-<img src = "Docs/images/yaml.png" style="margin-right: 15px;" /> 
-<img src = "Docs/images/CICD.png" style="margin-right: 15px;" /> 
-<img src = "Docs/images/ssh.jpg" style="margin-right: 15px;" /> 
-<img src = "Docs/images/linux.png" style="margin-right: 15px;" /> 
-<img src = "Docs/images/nginx.jpg" style="margin-right: 15px;" /> 
-<img src = "Docs/images/https.png" style="margin-right: 15px;" /> 
+![image info](Docs/images/yaml.png) 
+![image info](Docs/images/CICD.png) 
+![image info](Docs/images/ssh.jpg) 
+![image info](Docs/images/linux.png) 
+![image info](Docs/images/nginx.jpg) 
+![image info](Docs/images/https.png) 
+
 
 ---
 
