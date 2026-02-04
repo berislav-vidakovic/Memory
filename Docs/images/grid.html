@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Pastel 3D Grid (5:3 Ratio)</title>
+<style>
+  body {
+    margin: 0;
+    background: linear-gradient(180deg, #aafa06, #77f2aa);
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(6, 150px); /* width */
+    grid-auto-rows: 90px; /* height -> 150:90 = 5:3 */
+    gap: 6px; /* tighter spacing */
+  }
+
+  .cell {
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+
+    /* Soft 3D bevel */
+    box-shadow:
+      inset 2px 2px 0 rgba(255,255,255,0.95),
+      inset -2px -2px 0 rgba(148,163,184,0.35),
+      0 4px 10px rgba(148,163,184,0.35);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #475569;
+    font-weight: 600;
+    transition: all 0.12s ease;
+  }
+
+  .cell:hover {
+    background: #f8fafc;
+    transform: translateY(-1px);
+    box-shadow:
+      inset 2px 2px 0 rgba(255,255,255,1),
+      inset -2px -2px 0 rgba(148,163,184,0.45),
+      0 8px 18px rgba(148,163,184,0.45);
+  }
+
+  .cell:active {
+    transform: translateY(1px);
+    background: #f1f5f9;
+    box-shadow:
+      inset 3px 3px 0 rgba(148,163,184,0.45),
+      inset -1px -1px 0 rgba(255,255,255,0.7);
+  }
+</style>
+</head>
+<body>
+
+<div class="grid" id="grid"></div>
+
+<script>
+  const grid = document.getElementById("grid");
+  for (let i = 1; i <= 30; i++) {
+    const div = document.createElement("div");
+    div.className = "cell";
+    div.textContent = i;
+    grid.appendChild(div);
+  }
+</script>
+
+</body>
+</html>

@@ -1,3 +1,34 @@
+## MEMORY - Single player and Multi player game
+
+<img src = "Docs/images/Memory.jpg" style="margin-right: 15px;" /> 
+
+---
+### Development Tech Stack
+
+
+
+<img src = "Docs/images/win11.png" style="margin-right: 15px;" /> 
+<img src = "Docs/images/vs.png" style="margin-right: 15px;" /> 
+<img src = "Docs/images/cs.png" style="margin-right: 15px;" /> 
+<img src = "Docs/images/DotNet.png" style="margin-right: 15px;" /> 
+<img src = "Docs/images/blazor.png" style="margin-right: 15px;" /> 
+<img src = "Docs/images/ws.png" style="margin-right: 15px;" /> 
+<img src = "Docs/images/sigR.jpg" style="margin-right: 15px;" /> 
+<img src = "Docs/images/aspnet.png" style="margin-right: 15px;" /> 
+<img src = "Docs/images/sqlserver.jpg" style="margin-right: 15px;" /> 
+
+---
+### Deployment Tech Stack
+
+<img src = "Docs/images/yaml.png" style="margin-right: 15px;" /> 
+<img src = "Docs/images/CICD.png" style="margin-right: 15px;" /> 
+<img src = "Docs/images/ssh.jpg" style="margin-right: 15px;" /> 
+<img src = "Docs/images/linux.png" style="margin-right: 15px;" /> 
+<img src = "Docs/images/nginx.jpg" style="margin-right: 15px;" /> 
+<img src = "Docs/images/https.png" style="margin-right: 15px;" /> 
+
+---
+
 ## Install MS SQL Server on Ubuntu
 
 
