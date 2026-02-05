@@ -7,8 +7,7 @@ namespace Shared.DTOs;
 
 public class UsersResponseDto
 {
-    public string Status { get; set; } = string.Empty;
-    public DateTime Timestamp { get; set; }
-    public string DBmessage { get; set; } = string.Empty;
+    public required string FullName { get; set; }
+    public bool IsOnline{ get; set; }
 
 }

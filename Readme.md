@@ -116,5 +116,6 @@ sqlcmd -S barryonweb.com,1433 -U SA -P "StrongPwd!" -C -W
 ## Run scripts
 
 ```bash
-sqlcmd -S localhost -U sa -P 'Abc1234!' -d Memory -C -i schema.sql
+sqlcmd -S localhost -U sa -P 'StrongPwd!' -d Memory -C -i schema.sql
+sqlcmd -S localhost -U sa -P 'StrongPwd!' -d Memory -C -i data.sql
 ```

@@ -16,9 +16,8 @@ public class UsersViewModel
 {
     private readonly UserApiService _userService;
 
-    public string StatusMessage { get; private set; } = "Loading users...";
+    public List<UsersResponseDto> AllUsers { get; private set; } = new();
 
-    public UsersResponseDto? UsersAll { get; private set; }
 
     public event Action? OnStateChanged;
 
@@ -31,14 +30,8 @@ public class UsersViewModel
 
     public async Task LoadUsersAsync()
     {
-        UsersAll = await _userService.GetUsersAsync();
-
-        if (UsersAll != null)
-        {
-            StatusMessage = UsersAll.Status;
-        }
-        else
-            StatusMessage = "(no users available)";
+        AllUsers = await _userService.GetUsersAsync();    
+ 
 
 
         OnStateChanged?.Invoke();

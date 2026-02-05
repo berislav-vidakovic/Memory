@@ -86,23 +86,22 @@ app.MapGet("/api/health", async (IServiceProvider services) =>
 
 app.MapGet("/api/users", async (IServiceProvider services) =>
 {
-    UsersResponseDto resp = new()
-    {
-        Status = "Users are created",
-        Timestamp = DateTime.UtcNow
-    };
-    /*
+    
     using var scope = services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    var firstHealth = await db.Healths.FirstOrDefaultAsync();
 
-    if (firstHealth != null)
-        resp.DBmessage = firstHealth.Msg;
-    else
-        resp.DBmessage = "No health DB records found";
-    */
 
-    return Results.Ok(resp);
+    
+    var users = await db.Users
+        .Select(u => new UsersResponseDto
+        {
+            FullName = u.FullName,
+            IsOnline = u.IsOnline
+        })
+        .ToListAsync();
+    
+
+    return Results.Ok(users);
 });
 
 var summaries = new[]

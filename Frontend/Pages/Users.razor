@@ -9,11 +9,32 @@
 {
     <p>Loading...</p>
 }
+else if (vm.AllUsers.Count == 0)
+{
+    <p>No users found.</p>
+}
 else
 {
-    <p>@((MarkupString)vm.StatusMessage)</p>
-
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Full Name</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in vm.AllUsers)
+            {
+                <tr>
+                    <td>@user.FullName</td>
+                    <td>@(user.IsOnline ? "Online" : "Offline")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 }
+
+
 
 @code {
     private Frontend.ViewModels.UsersViewModel? vm;
@@ -28,7 +49,5 @@ else
         };
 
         await vm.LoadUsersAsync();
-
-        StateHasChanged();
     }
 }

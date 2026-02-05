@@ -12,8 +12,8 @@ public class UserApiService
         _http = http;
     }
 
-    public async Task<UsersResponseDto?> GetUsersAsync()
+    public async Task<List<UsersResponseDto>> GetUsersAsync()
     {
-        return await _http.GetFromJsonAsync<UsersResponseDto>("https://localhost:5206/api/users");
+        return await _http.GetFromJsonAsync<List<UsersResponseDto>>("https://localhost:5206/api/users");
     }
 }

@@ -7,6 +7,7 @@ namespace Backend.Data
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
         public DbSet<Health> Healths { get; set; } = null!;
+        public DbSet<User> Users{ get; set; } = null!;
     }
 
 }

@@ -7,7 +7,7 @@ CREATE TABLE Health (Id INT IDENTITY(1,1) PRIMARY KEY, Msg NVARCHAR(50));
 
 
 CREATE TABLE users (
-    user_id INT IDENTITY(1,1) PRIMARY KEY,
+    id INT IDENTITY(1,1) PRIMARY KEY,
     password_hash VARCHAR(255) NOT NULL,
     login VARCHAR(100) NOT NULL UNIQUE,
     full_name VARCHAR(255) NULL,
@@ -21,7 +21,7 @@ CREATE TABLE refresh_tokens (
     token VARCHAR(255) NOT NULL,
     expires_at DATETIME2 NOT NULL,
     CONSTRAINT fk_user FOREIGN KEY (user_id)
-        REFERENCES users(user_id)
+        REFERENCES users(id)
         ON DELETE CASCADE
 );
 
