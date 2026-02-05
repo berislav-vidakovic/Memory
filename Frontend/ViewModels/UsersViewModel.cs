@@ -1,8 +1,10 @@
 ﻿using Frontend.Pages;
 using Frontend.Services;
 using Shared.DTOs;
+using Shared;
 
 namespace Frontend.ViewModels;
+
 
 /*
 MVVM Architecture
@@ -14,7 +16,7 @@ MVVM Architecture
 
 public class UsersViewModel
 {
-    private readonly UserApiService _userService;
+    private readonly UserApiService _userService;    
 
     public List<UsersResponseDto> AllUsers { get; private set; } = new();
 
@@ -56,7 +58,7 @@ public class UsersViewModel
         OnStateChanged?.Invoke();
     }
 
-    public void LoginOk()
+    public async Task LoginOk()
     {
         var user = AllUsers.FirstOrDefault(u => u.Login == SelectedLogin);
 
@@ -66,6 +68,19 @@ public class UsersViewModel
             return;
         }
         Console.WriteLine($"LOGIN: {SelectedLogin}, Password: {Password}, Full name: {user.FullName}");
+
+        string HashedPwd = Utils.HashPassword(Password);
+
+        UserLoginDto loginBody = new UserLoginDto
+        {
+            Login = SelectedLogin,
+            PwdHashed = HashedPwd
+        };
+
+        bool loginSuccesss = await _userService.LoginAsync(loginBody);
+
+        Console.WriteLine($"Login result: {loginSuccesss}");
+
         CloseLoginDialog();
     }
 

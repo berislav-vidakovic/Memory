@@ -6,15 +6,18 @@
 <h1>Users</h1>
 <hr />
 <h3>You are not logged in</h3>
-<button class="btn btn-primary mt-2" @onclick="Login">
-    Login
-</button>
-<button class="btn btn-primary mt-2" @onclick="Logout">
-    Logout
-</button>
-<button class="btn btn-primary mt-2" @onclick="Register">
-    Register
-</button>
+    <button class="btn btn-primary mt-2" @onclick="Login">
+        Login
+    </button>
+    <button class="btn btn-primary mt-2" @onclick="Logout">
+        Logout
+    </button>
+    <button class="btn btn-primary mt-2" @onclick="UpdatePwd">
+        Update Password
+    </button>
+    <button class="btn btn-primary mt-2" @onclick="Register">
+        Register
+    </button>
 <hr />
 
 @if (vm == null)
@@ -115,6 +118,15 @@ else
         if (vm != null)
         {
             Console.WriteLine("Logout clicked");
+            StateHasChanged();
+        }
+    }
+
+    private async Task UpdatePwd()
+    {
+        if (vm != null)
+        {
+            Console.WriteLine("UpdatePwd clicked");
             StateHasChanged();
         }
     }

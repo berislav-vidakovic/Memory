@@ -103,6 +103,35 @@ app.MapGet("/api/users", async (IServiceProvider services) =>
     return Results.Ok(users);
 });
 
+app.MapPost("/api/login", async (IServiceProvider services, UserLoginDto login) =>
+{
+    // Just log what came in for testing
+    Console.WriteLine($"Login attempt: {login.Login}, PwdHashed: {login.PwdHashed}");
+
+    using var scope = services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    // Find user by Login
+    var user = await db.Users.FirstOrDefaultAsync(u => u.Login == login.Login);
+
+    if (user == null)
+    {
+        Console.WriteLine($"Login failed: user '{login.Login}' not found");
+        return Results.NotFound("User not found");
+    }
+
+    // TODO: password verification
+    user.IsOnline = true;
+
+    await db.SaveChangesAsync();
+
+    Console.WriteLine($"User '{user.Login}' set to online");
+
+    // Return OK always
+    return Results.Ok();
+});
+
+
 var summaries = new[]
 {
     "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
