@@ -20,9 +20,9 @@
 ---
 ### Deployment Tech Stack
 
-![image info](Docs/images/yaml.png) 
 ![image info](Docs/images/CICD.png) 
 ![image info](Docs/images/ssh.jpg) 
+![image info](Docs/images/docker.png) 
 ![image info](Docs/images/linux.png) 
 ![image info](Docs/images/nginx.jpg) 
 ![image info](Docs/images/https.png) 
