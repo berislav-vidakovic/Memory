@@ -4,6 +4,18 @@
 <PageTitle>Users</PageTitle>
 
 <h1>Users</h1>
+<hr />
+<h3>You are not logged in</h3>
+<button class="btn btn-primary mt-2" @onclick="Login">
+    Login
+</button>
+<button class="btn btn-primary mt-2" @onclick="Logout">
+    Logout
+</button>
+<button class="btn btn-primary mt-2" @onclick="Register">
+    Register
+</button>
+<hr />
 
 @if (vm == null)
 {
@@ -36,6 +48,47 @@ else
 
 
 
+@if (vm != null && vm.ShowLoginDialog)
+{
+    <div class="modal-backdrop"></div>
+
+    <div class="modal show d-block">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Login</h5>
+                    <button class="btn-close" @onclick="vm.LoginCancel"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <label>User</label>
+                    <select class="form-select" @bind="vm.SelectedUserFullName">
+                        <option value="">-- Select offline user --</option>
+
+                        @foreach (var user in vm.OfflineUsers)
+                        {
+                            <option value="@user.FullName">@user.FullName</option>
+                        }
+                    </select>
+
+                    <label class="mt-2">Password</label>
+                    <input type="password" class="form-control" @bind="vm.Password" />
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="vm.LoginCancel">Cancel</button>
+                    <button class="btn btn-success" @onclick="vm.LoginOk">OK</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
+
 @code {
     private Frontend.ViewModels.UsersViewModel? vm;
 
@@ -49,5 +102,29 @@ else
         };
 
         await vm.LoadUsersAsync();
+    }
+
+    private async Task Login()
+    {
+        if (vm != null)
+            vm.OpenLoginDialog();
+    }
+
+    private async Task Logout()
+    {
+        if (vm != null)
+        {
+            Console.WriteLine("Logout clicked");
+            StateHasChanged();
+        }
+    }
+
+    private async Task Register()
+    {
+        if (vm != null)
+        {
+            Console.WriteLine("Register clicked");
+            StateHasChanged();
+        }
     }
 }
