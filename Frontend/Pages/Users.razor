@@ -64,12 +64,12 @@ else
                 <div class="modal-body">
 
                     <label>User</label>
-                    <select class="form-select" @bind="vm.SelectedUserFullName">
+                    <select class="form-select" @bind="vm.SelectedLogin">
                         <option value="">-- Select offline user --</option>
 
                         @foreach (var user in vm.OfflineUsers)
                         {
-                            <option value="@user.FullName">@user.FullName</option>
+                            <option value="@user.Login">@user.FullName</option>
                         }
                     </select>
 

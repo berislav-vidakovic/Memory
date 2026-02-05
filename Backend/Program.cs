@@ -89,14 +89,13 @@ app.MapGet("/api/users", async (IServiceProvider services) =>
     
     using var scope = services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-
     
     var users = await db.Users
         .Select(u => new UsersResponseDto
         {
             FullName = u.FullName,
-            IsOnline = u.IsOnline
+            IsOnline = u.IsOnline,
+            Login = u.Login
         })
         .ToListAsync();
     

@@ -20,7 +20,7 @@ public class UsersViewModel
 
     public bool ShowLoginDialog { get; private set; }
 
-    public string? SelectedUserFullName { get; set; }
+    public string? SelectedLogin { get; set; }
     public string Password { get; set; } = string.Empty;
 
 
@@ -52,13 +52,20 @@ public class UsersViewModel
     {
         ShowLoginDialog = false;
         Password = string.Empty;
-        SelectedUserFullName = null;
+        SelectedLogin = null;
         OnStateChanged?.Invoke();
     }
 
     public void LoginOk()
     {
-        Console.WriteLine($"LOGIN OK: {SelectedUserFullName}, Password: {Password}");
+        var user = AllUsers.FirstOrDefault(u => u.Login == SelectedLogin);
+
+        if (user == null)
+        {
+            Console.WriteLine("LOGIN FAILED: No user selected or user not found");
+            return;
+        }
+        Console.WriteLine($"LOGIN: {SelectedLogin}, Password: {Password}, Full name: {user.FullName}");
         CloseLoginDialog();
     }
 
