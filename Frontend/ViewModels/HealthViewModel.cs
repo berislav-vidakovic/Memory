@@ -41,11 +41,21 @@ public class HealthViewModel
     public async Task LoadHealthAsync()
     {
         Health = await _healthService.GetHealthAsync();
-        StatusMessage = Health != null
-            ? $"...Connected to backend! <br />Backend is running on https://localhost:5206"
-            : "Failed to connect to backend";
+        //StatusMessage = Health != null
+        //  ? $"...Connected to backend! <br />Backend is running on https://localhost:5206"
+        // : "Failed to connect to backend";
 
-        OnStateChanged?.Invoke();
+        if (Health != null)
+        {
+            StatusMessage = Health.Status;
+            StatusMessage += "<br />";
+            StatusMessage += Health.DBmessage;
+        }
+        else
+            StatusMessage = "(no backend connection)";
+
+
+            OnStateChanged?.Invoke();
     }
 
     public async Task StartChatAsync()

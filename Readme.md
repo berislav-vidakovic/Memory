@@ -76,7 +76,7 @@ source ~/.bashrc
 -C = TrustServerCertificate
 
 ```bash
-sqlcmd -S 127.0.0.1 -U SA -P "StrongPwd!" -C
+sqlcmd -S 127.0.0.1 -U SA -P "StrongPwd!" -C -W
 ```
 
 ## Creating DB and tables
@@ -104,12 +104,17 @@ INSERT INTO Health (Msg) VALUES ('Hello world from SQL Server DB!');
 ### Internal connection
 
 ```bash
-sqlcmd -S 127.0.0.1 -U SA -P "StrongPwd!" -C
+sqlcmd -S 127.0.0.1 -U SA -P "StrongPwd!" -C -W
 ```
 
 ### External connection
 
 ```bash
-sqlcmd -S barryonweb.com,1433 -U SA -P "StrongPwd!" -C
+sqlcmd -S barryonweb.com,1433 -U SA -P "StrongPwd!" -C -W
 ```
 
+## Run scripts
+
+```bash
+sqlcmd -S localhost -U sa -P 'Abc1234!' -d Memory -C -i schema.sql
+```

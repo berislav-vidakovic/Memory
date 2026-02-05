@@ -60,30 +60,49 @@ app.MapHub<Backend.Hubs.ChatHub>("/hubs/chat");
 
 
 // Startup logic: read first Health record
-using (var scope = app.Services.CreateScope())
+
+
+
+
+app.MapGet("/api/health", async (IServiceProvider services) =>
 {
-    Console.WriteLine("===========Access DbContext .... =============================");
-
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    var firstHealth = await db.Healths.FirstOrDefaultAsync();
-
-    Console.WriteLine("===========Get Health TOP 1 ===================================");
-
-    if (firstHealth != null)
-        Console.WriteLine($"Health message from DB: {firstHealth.Msg}");
-    else
-        Console.WriteLine("No health records found.");
-}
-
-
-
-app.MapGet("/api/health", () =>
-{
-    return Results.Ok(new HealthResponseDto
+    HealthResponseDto resp = new()
     {
         Status = "Backend is running",
         Timestamp = DateTime.UtcNow
-    });
+    };
+
+    using var scope = services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var firstHealth = await db.Healths.FirstOrDefaultAsync();
+
+    if (firstHealth != null)
+        resp.DBmessage = firstHealth.Msg;
+    else
+        resp.DBmessage = "No health DB records found";
+
+    return Results.Ok(resp);
+});
+
+app.MapGet("/api/users", async (IServiceProvider services) =>
+{
+    UsersResponseDto resp = new()
+    {
+        Status = "Users are created",
+        Timestamp = DateTime.UtcNow
+    };
+    /*
+    using var scope = services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    var firstHealth = await db.Healths.FirstOrDefaultAsync();
+
+    if (firstHealth != null)
+        resp.DBmessage = firstHealth.Msg;
+    else
+        resp.DBmessage = "No health DB records found";
+    */
+
+    return Results.Ok(resp);
 });
 
 var summaries = new[]

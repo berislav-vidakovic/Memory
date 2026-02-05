@@ -1,0 +1,34 @@
+﻿@page "/users"
+@inject Frontend.Services.UserApiService UserService
+
+<PageTitle>Users</PageTitle>
+
+<h1>Users</h1>
+
+@if (vm == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <p>@((MarkupString)vm.StatusMessage)</p>
+
+}
+
+@code {
+    private Frontend.ViewModels.UsersViewModel? vm;
+
+    protected override async Task OnInitializedAsync()
+    {
+        vm = new Frontend.ViewModels.UsersViewModel(UserService);
+
+        vm.OnStateChanged += () =>
+        {
+            InvokeAsync(StateHasChanged);
+        };
+
+        await vm.LoadUsersAsync();
+
+        StateHasChanged();
+    }
+}

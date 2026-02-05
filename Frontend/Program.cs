@@ -12,8 +12,9 @@ builder.Services.AddScoped(sp => new HttpClient());
 //builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
 
-// Add HealthApiService
+// Register Services
 builder.Services.AddScoped<HealthApiService>();
+builder.Services.AddScoped<UserApiService>();
 
 builder.Services.AddSingleton<ChatSignalRService>();
 
