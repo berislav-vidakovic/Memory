@@ -95,7 +95,8 @@ app.MapGet("/api/users", async (IServiceProvider services) =>
         {
             FullName = u.FullName,
             IsOnline = u.IsOnline,
-            Login = u.Login
+            Login = u.Login,
+            Id = u.Id
         })
         .ToListAsync();
     
@@ -126,6 +127,32 @@ app.MapPost("/api/login", async (IServiceProvider services, UserLoginDto login) 
     await db.SaveChangesAsync();
 
     Console.WriteLine($"User '{user.Login}' set to online");
+
+    // Return OK always
+    return Results.Ok();
+});
+
+app.MapPost("/api/logout", async (IServiceProvider services, UserLoginDto login) =>
+{
+    // Just log what came in for testing
+    Console.WriteLine($"Logou attempt: {login.Login}");
+
+    using var scope = services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    // Find user by Login
+    var user = await db.Users.FirstOrDefaultAsync(u => u.Login == login.Login);
+
+    if (user == null)
+    {
+        Console.WriteLine($"Logout failed: user '{login.Login}' not found");
+        return Results.NotFound("User not found");
+    }
+
+    user.IsOnline = false;
+    await db.SaveChangesAsync();
+
+    Console.WriteLine($"User '{user.Login}' set to offline");
 
     // Return OK always
     return Results.Ok();

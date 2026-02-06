@@ -5,11 +5,23 @@
 
 <h1>Users</h1>
 <hr />
-<h3>You are not logged in</h3>
-    <button class="btn btn-primary mt-2" @onclick="Login">
+
+@if( vm?.CurrentUserId == null ) 
+{
+    <h3>You are not logged in</h3>
+}
+else
+{
+    <h3>Welcome, @vm.AllUsers.FirstOrDefault(u => u.Id == vm?.CurrentUserId)!.FullName !</h3>
+
+}
+    
+
+
+<button class="btn btn-primary mt-2" @onclick="Login" disabled=@(vm?.CurrentUserId != null)>
         Login
     </button>
-    <button class="btn btn-primary mt-2" @onclick="Logout">
+<button class="btn btn-primary mt-2" @onclick=@vm.Logout disabled=@(vm?.CurrentUserId == null)>
         Logout
     </button>
     <button class="btn btn-primary mt-2" @onclick="UpdatePwd">
@@ -109,18 +121,12 @@ else
 
     private async Task Login()
     {
-        if (vm != null)
+        if (vm != null) 
             vm.OpenLoginDialog();
+
     }
 
-    private async Task Logout()
-    {
-        if (vm != null)
-        {
-            Console.WriteLine("Logout clicked");
-            StateHasChanged();
-        }
-    }
+
 
     private async Task UpdatePwd()
     {

@@ -25,6 +25,7 @@ public class UsersViewModel
     public string? SelectedLogin { get; set; }
     public string Password { get; set; } = string.Empty;
 
+    public int? CurrentUserId { get; private set; } = null;
 
     public event Action? OnStateChanged;
 
@@ -60,7 +61,7 @@ public class UsersViewModel
 
     public async Task LoginOk()
     {
-        var user = AllUsers.FirstOrDefault(u => u.Login == SelectedLogin);
+        UsersResponseDto? user = AllUsers.FirstOrDefault(u => u.Login == SelectedLogin);
 
         if (user == null)
         {
@@ -73,13 +74,16 @@ public class UsersViewModel
 
         UserLoginDto loginBody = new UserLoginDto
         {
-            Login = SelectedLogin,
+            Login = SelectedLogin!,
             PwdHashed = HashedPwd
         };
 
-        bool loginSuccesss = await _userService.LoginAsync(loginBody);
+        bool bSuccess = await _userService.LoginAsync(loginBody);
+        if (bSuccess)
+            CurrentUserId = user.Id;
+        
 
-        Console.WriteLine($"Login result: {loginSuccesss}");
+        Console.WriteLine($"Login result: {bSuccess}");
 
         CloseLoginDialog();
     }
@@ -88,6 +92,32 @@ public class UsersViewModel
     {
         Console.WriteLine("LOGIN CANCELLED");
         CloseLoginDialog();
+    }
+
+    public async Task Logout()
+    {
+        Console.WriteLine("Logout clicked");
+        UsersResponseDto? user = AllUsers.FirstOrDefault(u => u.Id == CurrentUserId);
+
+        if (user == null)
+        {
+            Console.WriteLine("LOGOUT FAILED: No user found");
+            return;
+        }
+
+
+        UserLoginDto logoutBody = new UserLoginDto
+        {
+            Login = user!.Login,
+            PwdHashed = ""
+        };
+
+        bool bSuccess = await _userService.LogoutAsync(logoutBody);
+        if (bSuccess)
+            CurrentUserId = null;
+
+        OnStateChanged?.Invoke();
+        
     }
 
 }
