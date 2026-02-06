@@ -1,0 +1,49 @@
+﻿@using Frontend.ViewModels
+@using Microsoft.AspNetCore.Components
+
+@if (Vm != null && Vm.ShowLoginDialog)
+{
+    <div class="modal-backdrop"></div>
+
+    <div class="modal show d-block">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Login</h5>
+                    <button class="btn-close" @onclick="Vm.LoginCancel"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <label>User</label>
+                    <select class="form-select" @bind="Vm.SelectedLogin">
+                        <option value="">-- Select offline user --</option>
+
+                        @foreach (var user in Vm.OfflineUsers)
+                        {
+                            <option value="@user.Login">@user.FullName</option>
+                        }
+                    </select>
+
+                    <label class="mt-2">Password</label>
+                    <input type="password" class="form-control" @bind="Vm.Password" />
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="Vm.LoginCancel">Cancel</button>
+                    <button class="btn btn-success" @onclick="Vm.LoginOk">OK</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    public UsersViewModel? Vm { get; set; }
+}
+

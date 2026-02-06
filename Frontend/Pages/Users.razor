@@ -1,6 +1,8 @@
 ﻿@page "/users"
 @inject Frontend.Services.UserApiService UserService
 
+@using Frontend.Components
+
 <PageTitle>Users</PageTitle>
 
 <h1>Users</h1>
@@ -14,8 +16,7 @@ else
 {
     <h3>Welcome, @vm.AllUsers.FirstOrDefault(u => u.Id == vm?.CurrentUserId)!.FullName !</h3>
 
-}
-    
+}    
 
 
 <button class="btn btn-primary mt-2" @onclick="Login" disabled=@(vm?.CurrentUserId != null)>
@@ -61,47 +62,7 @@ else
     </table>
 }
 
-
-
-@if (vm != null && vm.ShowLoginDialog)
-{
-    <div class="modal-backdrop"></div>
-
-    <div class="modal show d-block">
-        <div class="modal-dialog">
-            <div class="modal-content">
-
-                <div class="modal-header">
-                    <h5 class="modal-title">Login</h5>
-                    <button class="btn-close" @onclick="vm.LoginCancel"></button>
-                </div>
-
-                <div class="modal-body">
-
-                    <label>User</label>
-                    <select class="form-select" @bind="vm.SelectedLogin">
-                        <option value="">-- Select offline user --</option>
-
-                        @foreach (var user in vm.OfflineUsers)
-                        {
-                            <option value="@user.Login">@user.FullName</option>
-                        }
-                    </select>
-
-                    <label class="mt-2">Password</label>
-                    <input type="password" class="form-control" @bind="vm.Password" />
-
-                </div>
-
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" @onclick="vm.LoginCancel">Cancel</button>
-                    <button class="btn btn-success" @onclick="vm.LoginOk">OK</button>
-                </div>
-
-            </div>
-        </div>
-    </div>
-}
+<LoginDialog Vm="vm" />
 
 
 @code {
