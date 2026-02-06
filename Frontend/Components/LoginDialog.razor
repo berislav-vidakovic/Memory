@@ -27,7 +27,22 @@
                     </select>
 
                     <label class="mt-2">Password</label>
-                    <input type="password" class="form-control" @bind="Vm.Password" />
+
+                    <div class="input-group">
+                        <input class="form-control"
+                               type=@(showPassword ? "text" : "password")
+                               @bind="Vm.Password" />
+
+                        <button type="button"
+                                class="btn btn-outline-secondary"
+                                @onclick="TogglePasswordVisibility"
+                                tabindex="-1">
+                            <i class="bi @(showPassword ? "bi-eye-slash" : "bi-eye")"></i>
+                        </button>
+                    </div>
+
+
+
 
                 </div>
 
@@ -45,5 +60,12 @@
 @code {
     [Parameter]
     public UsersViewModel? Vm { get; set; }
+
+    private bool showPassword = false;
+
+    private void TogglePasswordVisibility()
+    {
+        showPassword = !showPassword;
+    }
 }
 

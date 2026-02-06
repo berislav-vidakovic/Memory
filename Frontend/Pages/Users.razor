@@ -64,6 +64,9 @@ else
 
 <LoginDialog Vm="vm" />
 
+<PasswordDialog Vm="vm" />
+
+
 
 @code {
     private Frontend.ViewModels.UsersViewModel? vm;
@@ -94,6 +97,7 @@ else
         if (vm != null)
         {
             Console.WriteLine("UpdatePwd clicked");
+            vm.ShowPwdDialog = true;
             StateHasChanged();
         }
     }

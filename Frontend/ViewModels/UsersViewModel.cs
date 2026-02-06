@@ -21,6 +21,13 @@ public class UsersViewModel
     public List<UsersResponseDto> AllUsers { get; private set; } = new();
 
     public bool ShowLoginDialog { get; private set; }
+    public bool ShowPwdDialog { get; set; }
+
+    public string? ExistingPassword { get; set; }
+    public string? CurrentPassword { get; set; }
+    public string? NewPassword { get; set; }
+    public string? ConfirmPassword { get; set; }
+
 
     public string? SelectedLogin { get; set; }
     public string Password { get; set; } = string.Empty;
@@ -57,6 +64,28 @@ public class UsersViewModel
         Password = string.Empty;
         SelectedLogin = null;
         OnStateChanged?.Invoke();
+    }
+
+    public void OpenPwdDialog()
+    {
+        ShowPwdDialog = true;
+        OnStateChanged?.Invoke();
+    }
+
+    public void ClosePwdDialog()
+    {
+        ShowPwdDialog = false;
+        OnStateChanged?.Invoke();
+    }
+
+    public async Task PwdOk()
+    {
+        ClosePwdDialog();
+    }
+
+    public async Task PwdCancel()
+    {
+        ClosePwdDialog();
     }
 
     public async Task LoginOk()
