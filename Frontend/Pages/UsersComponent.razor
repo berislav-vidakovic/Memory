@@ -1,7 +1,9 @@
-﻿@page "/users"
-@inject Frontend.Services.UserApiService UserService
+﻿@inject Frontend.Services.UserApiService UserService
 
 @using Frontend.Components
+@using Frontend.ViewModels
+
+@inherits UsersPageViewModel;
 
 <PageTitle>Users</PageTitle>
 
@@ -63,15 +65,23 @@ else
     </table>
 }
 
+<LoginDialog Vm="vm" />
+
+<EditUserDlg 
+    Vm="vm" 
+    AllUsers="vm!.AllUsers" 
+ />
 
 
 
 @code {
-    private Frontend.ViewModels.UsersViewModel? vm;
+
+    private Frontend.ViewModels.UsersPageViewModel? vm;
 
     protected override async Task OnInitializedAsync()
     {
-        vm = new Frontend.ViewModels.UsersViewModel(UserService);
+
+        vm = this;
 
         vm.OnStateChanged += () =>
         {
