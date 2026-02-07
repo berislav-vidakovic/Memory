@@ -1,6 +1,8 @@
 using Shared.DTOs;
+using Shared;
 using Backend.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -96,7 +98,8 @@ app.MapGet("/api/users", async (IServiceProvider services) =>
             FullName = u.FullName,
             IsOnline = u.IsOnline,
             Login = u.Login,
-            Id = u.Id
+            Id = u.Id,
+            HashedPwd = u.PasswordHash
         })
         .ToListAsync();
     
@@ -121,7 +124,17 @@ app.MapPost("/api/login", async (IServiceProvider services, UserLoginDto login) 
         return Results.NotFound("User not found");
     }
 
-    // TODO: password verification
+    if (string.IsNullOrEmpty(user.PasswordHash))  // 1st time login    
+        user.PasswordHash = HashUtil.HashPasswordServer(login.PwdHashed);    
+    else
+    {
+        // Password verification
+        bool valid = HashUtil.VerifyPasswordServer(login.PwdHashed, user.PasswordHash);
+
+        if (!valid)
+            return Results.Unauthorized();
+    }
+
     user.IsOnline = true;
 
     await db.SaveChangesAsync();

@@ -99,7 +99,7 @@ public class UsersViewModel
         }
         Console.WriteLine($"LOGIN: {SelectedLogin}, Password: {Password}, Full name: {user.FullName}");
 
-        string HashedPwd = Utils.HashPassword(Password);
+        string HashedPwd = HashUtil.HashClient(Password);
 
         UserLoginDto loginBody = new UserLoginDto
         {

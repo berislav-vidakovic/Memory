@@ -10,6 +10,7 @@ public class UsersResponseDto
     public int Id { get; set; }
     public required string FullName { get; set; }
     public required string Login { get; set; }
+    public required string HashedPwd { get; set; }
     public bool IsOnline{ get; set; }
 
 }

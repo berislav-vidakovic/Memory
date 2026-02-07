@@ -25,7 +25,7 @@ else
 <button class="btn btn-primary mt-2" @onclick=@vm.Logout disabled=@(vm?.CurrentUserId == null)>
         Logout
     </button>
-    <button class="btn btn-primary mt-2" @onclick="UpdatePwd">
+<button class="btn btn-primary mt-2" @onclick="UpdatePwd" disabled=@(vm?.CurrentUserId == null)>
         Update Password
     </button>
     <button class="btn btn-primary mt-2" @onclick="Register">

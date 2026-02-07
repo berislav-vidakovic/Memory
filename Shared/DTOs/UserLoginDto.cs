@@ -11,6 +11,4 @@ public class UserLoginDto
     public required string PwdHashed { get; set; }
     public required string Login { get; set; }
 
-   
-
 }
