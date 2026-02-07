@@ -1,7 +1,6 @@
-﻿@using Frontend.ViewModels
-@using Microsoft.AspNetCore.Components
+﻿@using Shared.DTOs
 
-@if (Vm != null && Vm.ShowLoginDialog)
+@if (Show)
 {
     <div class="modal-backdrop"></div>
 
@@ -11,16 +10,16 @@
 
                 <div class="modal-header">
                     <h5 class="modal-title">Login</h5>
-                    <button class="btn-close" @onclick="Vm.LoginCancel"></button>
+                    <button class="btn-close" @onclick="Cancel"></button>
                 </div>
 
                 <div class="modal-body">
 
                     <label>User</label>
-                    <select class="form-select" @bind="Vm.SelectedLogin">
+                    <select class="form-select" @bind="selectedLogin">
                         <option value="">-- Select offline user --</option>
 
-                        @foreach (var user in Vm.OfflineUsers)
+                        @foreach (var user in OfflineUsers)
                         {
                             <option value="@user.Login">@user.FullName</option>
                         }
@@ -31,7 +30,7 @@
                     <div class="input-group">
                         <input class="form-control"
                                type=@(showPassword ? "text" : "password")
-                               @bind="Vm.Password" />
+                               @bind="password" />
 
                         <button type="button"
                                 class="btn btn-outline-secondary"
@@ -41,14 +40,11 @@
                         </button>
                     </div>
 
-
-
-
                 </div>
 
                 <div class="modal-footer">
-                    <button class="btn btn-secondary" @onclick="Vm.LoginCancel">Cancel</button>
-                    <button class="btn btn-success" @onclick="Vm.LoginOk">OK</button>
+                    <button class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+                    <button class="btn btn-success" @onclick="Confirm">OK</button>
                 </div>
 
             </div>
@@ -56,16 +52,25 @@
     </div>
 }
 
-
 @code {
-    [Parameter]
-    public UsersPageViewModel? Vm { get; set; }
+    [Parameter] public List<UsersResponseDto> OfflineUsers { get; set; } = new();
+    [Parameter] public EventCallback<(string login, string password)> OnConfirm { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+    [Parameter] public bool Show { get; set; }
 
-    private bool showPassword = false;
+    private string? selectedLogin;
+    private string password = string.Empty;
+    private bool showPassword;
 
     private void TogglePasswordVisibility()
-    {
-        showPassword = !showPassword;
-    }
-}
+        => showPassword = !showPassword;
 
+    private async Task Confirm()
+    {
+        if (!string.IsNullOrWhiteSpace(selectedLogin))
+            await OnConfirm.InvokeAsync((selectedLogin, password));
+    }
+
+    private async Task Cancel()
+        => await OnCancel.InvokeAsync();
+}

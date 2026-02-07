@@ -69,7 +69,10 @@ else
     </table>
 }
 
-<LoginDialog Vm="vm" />
+<LoginDialog Show="ShowLoginDialog"
+             OfflineUsers="OfflineUsers"
+             OnConfirm="HandleLoginConfirm"
+             OnCancel="LoginCancel" />
 
 <EditUserDlg 
     Vm="vm" 
@@ -120,4 +123,13 @@ else
         Console.WriteLine("Register clicked");
         StateHasChanged();
     }
+
+    private async Task HandleLoginConfirm((string login, string password) data)
+    {
+        SelectedLogin = data.login;
+        Password = data.password;
+
+        await LoginOk();
+    }
+
 }
