@@ -1,5 +1,6 @@
 ﻿@using Frontend.ViewModels
 @using Microsoft.AspNetCore.Components
+@using Shared.DTOs
 
 @if (Vm != null && Vm.ShowPwdDialog)
 {
@@ -20,11 +21,12 @@
                     <select class="form-select" @bind="Vm.EditUserId">
                         <option value="">-- Select  user --</option>
 
-                        @foreach (var user in Vm.AllUsers)
+                        @foreach (var user in AllUsers)
                         {
                             <option value="@user.Id">@user.FullName</option>
                         }
                     </select>
+                                       
 
                     <label class="mt-2">Current Password</label>
                     <div class="input-group">
@@ -86,6 +88,9 @@
 @code {
     [Parameter]
     public UsersViewModel? Vm { get; set; }
+
+    [Parameter]
+    public List<UsersResponseDto> AllUsers { get; set; } = new();
 
     private enum PwdField
     {

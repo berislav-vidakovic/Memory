@@ -92,6 +92,7 @@ public class UsersViewModel
 
     public async Task LoginOk()
     {
+        Console.WriteLine("Login attempt login=" + SelectedLogin + " pwd=" + Password);
         UsersResponseDto? user = AllUsers.FirstOrDefault(u => u.Login == SelectedLogin);
 
         if (user == null)
