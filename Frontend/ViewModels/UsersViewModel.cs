@@ -30,6 +30,7 @@ public class UsersViewModel
 
 
     public string? SelectedLogin { get; set; }
+    public int? EditUserId{ get; set; }
     public string Password { get; set; } = string.Empty;
 
     public int? CurrentUserId { get; private set; } = null;
@@ -80,6 +81,7 @@ public class UsersViewModel
 
     public async Task PwdOk()
     {
+        Console.WriteLine("Edit User ID=" + EditUserId);
         ClosePwdDialog();
     }
 

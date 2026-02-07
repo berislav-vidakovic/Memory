@@ -10,23 +10,33 @@
             <div class="modal-content">
 
                 <div class="modal-header">
-                    <h5 class="modal-title">Update password</h5>
+                    <h5 class="modal-title">Edit User</h5>
                     <button class="btn-close" @onclick="Vm.PwdCancel"></button>
-                </div>
+                </div>                
 
                 <div class="modal-body">
+
+                    <label>User</label>
+                    <select class="form-select" @bind="Vm.EditUserId">
+                        <option value="">-- Select  user --</option>
+
+                        @foreach (var user in Vm.AllUsers)
+                        {
+                            <option value="@user.Id">@user.FullName</option>
+                        }
+                    </select>
 
                     <label class="mt-2">Current Password</label>
                     <div class="input-group">
                         <input class="form-control"
-                               type=@(showPassword["Current"] ? "text" : "password")
+                               type=@(showPassword[PwdField.Current] ? "text" : "password")
                                @bind="Vm.CurrentPassword" />
 
                         <button type="button"
                                 class="btn btn-outline-secondary"
-                                @onclick='() => TogglePasswordVisibility("Current")'
+                                @onclick='() => TogglePasswordVisibility(PwdField.Current)'
                                 tabindex="-1">
-                            <i class="bi @(showPassword["Current"] ? "bi-eye-slash" : "bi-eye")"></i>
+                            <i class="bi @(showPassword[PwdField.Current] ? "bi-eye-slash" : "bi-eye")"></i>
                         </button>
                     </div>
 
@@ -34,14 +44,14 @@
                     <label class="mt-2">New Password</label>
                     <div class="input-group">
                         <input class="form-control"
-                               type=@(showPassword["New"] ? "text" : "password")
+                               type=@(showPassword[PwdField.New] ? "text" : "password")
                                @bind="Vm.NewPassword" />
 
                         <button type="button"
                                 class="btn btn-outline-secondary"
-                                @onclick='() => TogglePasswordVisibility("New")'
+                                @onclick='() => TogglePasswordVisibility(PwdField.New)'
                                 tabindex="-1">
-                            <i class="bi @(showPassword["New"] ? "bi-eye-slash" : "bi-eye")"></i>
+                            <i class="bi @(showPassword[PwdField.New] ? "bi-eye-slash" : "bi-eye")"></i>
                         </button>
                     </div>
 
@@ -49,14 +59,14 @@
                     <label class="mt-2">Confirm Password</label>
                     <div class="input-group">
                         <input class="form-control"
-                               type=@(showPassword["Confirm"] ? "text" : "password")
+                               type=@(showPassword[PwdField.Confirm] ? "text" : "password")
                                @bind="Vm.ConfirmPassword" />
 
                         <button type="button"
                                 class="btn btn-outline-secondary"
-                                @onclick='() => TogglePasswordVisibility("Confirm")'
+                                @onclick='() => TogglePasswordVisibility(PwdField.Confirm)'
                                 tabindex="-1">
-                            <i class="bi @(showPassword["Confirm"] ? "bi-eye-slash" : "bi-eye")"></i>
+                            <i class="bi @(showPassword[PwdField.Confirm] ? "bi-eye-slash" : "bi-eye")"></i>
                         </button>
                     </div>
 
@@ -77,14 +87,21 @@
     [Parameter]
     public UsersViewModel? Vm { get; set; }
 
-    private Dictionary<string, bool> showPassword = new()
+    private enum PwdField
     {
-        { "Current", false },
-        { "New", false },
-        { "Confirm", false }
+        Current,
+        New,
+        Confirm
+    }
+
+    private Dictionary<PwdField, bool> showPassword = new()
+    {
+        { PwdField.Current, false },
+        { PwdField.New, false },
+        { PwdField.Confirm, false }
     };
 
-    private void TogglePasswordVisibility(string field)
+    private void TogglePasswordVisibility(PwdField field)
     {
         if (showPassword.ContainsKey(field))
         {
