@@ -14,24 +14,24 @@
 <h1>Users</h1>
 <hr />
 
-@if( vm?.CurrentUserId == null ) 
+@if( CurrentUserId == null ) 
 {
     <h3>You are not logged in</h3>
 }
 else
 {
-    <h3>Welcome, @vm.AllUsers.FirstOrDefault(u => u.Id == vm?.CurrentUserId)!.FullName !</h3>
+    <h3>Welcome, AllUsers.FirstOrDefault(u => u.Id == CurrentUserId)!.FullName !</h3>
 
 }    
 
 
-<button class="btn btn-primary mt-2" @onclick="Login" disabled=@(vm?.CurrentUserId != null)>
+<button class="btn btn-primary mt-2" @onclick="OpenLoginDialog" disabled=@(CurrentUserId != null)>
         Login
     </button>
-<button class="btn btn-primary mt-2" @onclick=@vm!.Logout disabled=@(vm?.CurrentUserId == null)>
+<button class="btn btn-primary mt-2" @onclick=Logout disabled=@(CurrentUserId == null)>
         Logout
     </button>
-<button class="btn btn-primary mt-2" @onclick="() => EditUser(vm?.CurrentUserId)" disabled=@(vm?.CurrentUserId == null)>
+<button class="btn btn-primary mt-2" @onclick="() => EditCurrentUser()" disabled=@(CurrentUserId == null)>
         Edit User
     </button>
     <button class="btn btn-primary mt-2" @onclick="Register">
@@ -43,7 +43,7 @@ else
 {
     <p>Loading...</p>
 }
-else if (vm.AllUsers.Count == 0)
+else if (AllUsers.Count == 0)
 {
     <p>No users found.</p>
 }
@@ -57,7 +57,7 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var user in vm.AllUsers)
+            @foreach (var user in AllUsers)
             {
                 <tr
                     @ondblclick="() => EditUser(user.Id)">
@@ -80,47 +80,44 @@ else
 
 @code {
 
+
+
     private UsersPageViewModel? vm;
 
     protected override async Task OnInitializedAsync()
     {
 
         vm = this;
-
-        vm.OnStateChanged += () =>
+        OnStateChanged += () =>
         {
             InvokeAsync(StateHasChanged);
         };
 
-        await vm.LoadUsersAsync();
+        await LoadUsersAsync();
     }
-
-    private async Task Login()
-    {
-        if (vm != null) 
-            vm.OpenLoginDialog();
-
-    }
+    
 
 
-
+    // need to keep currently for backward compatibility (legacy)
     private async Task EditUser(int? userId)
     {
-        if (vm != null)
-        {
-            Console.WriteLine("EditUser clicked");
-            vm.EditUserId = userId;
-            vm.ShowPwdDialog = true;
-            StateHasChanged();
-        }
+        Console.WriteLine("EditUser clicked");
+        EditUserId = userId;
+        ShowPwdDialog = true;
+        StateHasChanged();
+    }
+
+    private async Task EditCurrentUser()
+    {
+        Console.WriteLine("EditUser clicked");
+        EditUserId = CurrentUserId;
+        ShowPwdDialog = true;
+        StateHasChanged();
     }
 
     private async Task Register()
     {
-        if (vm != null)
-        {
-            Console.WriteLine("Register clicked");
-            StateHasChanged();
-        }
+        Console.WriteLine("Register clicked");
+        StateHasChanged();
     }
 }
