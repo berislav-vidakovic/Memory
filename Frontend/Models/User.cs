@@ -6,7 +6,7 @@ namespace Frontend.Models
     {
         public int Id { get; set; }
         public string FullName { get; set; } = string.Empty;
-        //public string Login { get; set; } = string.Empty;
+        public string Login { get; set; } = string.Empty;
         public string HashedPwd { get; set; } = string.Empty;
         public bool IsOnline { get; set; }
 
@@ -18,7 +18,7 @@ namespace Frontend.Models
             HashedPwd = dto.HashedPwd;
             IsOnline = dto.IsOnline;
         }
-
+        /*
         private string _login = "";
 
         public string Login
@@ -30,6 +30,6 @@ namespace Frontend.Models
                 Console.WriteLine(Environment.StackTrace);
                 _login = value;
             }
-        }
+        }*/
     }
 }

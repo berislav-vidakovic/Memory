@@ -1,0 +1,31 @@
+﻿@if (Show)
+{
+    <div class="modal-backdrop"></div>
+
+    <div class="modal show d-block">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">@Title</h5>
+                    <button class="btn-close" @onclick="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <p>@Message</p>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-primary"
+                            @onclick="Close"
+                            autofocus>
+                        OK
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
+

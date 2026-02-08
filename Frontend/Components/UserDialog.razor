@@ -84,11 +84,29 @@
             </div>
         </div>
     </div>
+
+    <InfoDialog Show="@ShowInfoDialog"
+                Title="@InfoTitle"
+                Message="@InfoMessage"
+                OnClose="() => ShowInfoDialog = false" />
 }
 
 
 @code {
     private EditUser LocalUser = new();
+
+    private bool ShowInfoDialog { get; set; }
+
+    private string? InfoTitle { get; set; }
+
+    private string? InfoMessage { get; set; }
+
+    private void RaiseInfoDlg( string sTitle, string sMsg)
+    {
+        InfoTitle = sTitle;
+        InfoMessage = sMsg;
+        ShowInfoDialog = true;
+    }
 
     protected override void OnParametersSet()
     {
@@ -111,8 +129,15 @@
     public async Task Cancel()
         => await OnCancel.InvokeAsync();
 
-    public async Task Submit()
-        => await OnSubmit.InvokeAsync(LocalUser);
+    public async Task Submit() 
+    {
+        RaiseInfoDlg("T", "Msg");
+        //StateHasChanged();
+
+       // await OnSubmit.InvokeAsync(LocalUser);
+    }
+
+    #region PasswordVisibilty 
 
     private enum PwdField
     {
@@ -135,5 +160,6 @@
             showPassword[field] = !showPassword[field];
         }
     }
+    #endregion
 }
 
