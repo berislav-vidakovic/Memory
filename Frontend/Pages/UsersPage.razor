@@ -2,6 +2,7 @@
 @inject Frontend.Services.UserApiService UserService
 
 @using Frontend.Components
+@using Frontend.Models
 @using Frontend.ViewModels
 
 @inherits UsersPageViewModel;
@@ -77,14 +78,42 @@ else
 @if (EditUserId != null)
 {
     <UserDialog SelectedUser="@AllUsers!.FirstOrDefault(u => u.Id == EditUserId)"
-                ExistingPassword="@AllUsers!.FirstOrDefault(u => u.Id == EditUserId)!.HashedPwd"
-                ShowEditUserDialog="@ShowPwdDialog"     />
+                ShowEditUserDialog="@ShowPwdDialog"    
+                OnSubmit="HandleUserUpdate"
+                OnCancel="CloseDialog" />
 }
- 
- 
-
 
 @code {
+
+
+
+    private async Task HandleUserUpdate(EditUser edited)
+    {
+        ShowPwdDialog = false;
+
+        return;
+        var user = AllUsers.FirstOrDefault(u => u.Id == edited.Id);
+        if (user == null)
+            return;
+
+        // Commit allowed changes
+        user.Login = edited.Login;
+        user.FullName = edited.FullName;
+
+        // Password handling stays here (business logic)
+        if (!string.IsNullOrWhiteSpace(edited.NewPassword))
+        {
+            // Verify current password, hash new password, save
+            //user.HashedPwd = HashPassword(edited.NewPassword);
+        }
+
+        ShowPwdDialog = false;
+    }
+
+    private void CloseDialog()
+    {
+        ShowPwdDialog = false;
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -106,6 +135,9 @@ else
         ShowPwdDialog = true;
         StateHasChanged();
     }
+
+
+
 
     private async Task Register()
     {

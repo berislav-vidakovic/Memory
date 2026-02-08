@@ -23,18 +23,18 @@
                     <label class="mt-2">Login</label>
                     <input class="form-control"
                            type="text"
-                           @bind="SelectedUser.Login" />
+                           @bind="LocalUser.Login" />
 
                     <label class="mt-2">Full Name</label>
                     <input class="form-control"
                            type="text"
-                           @bind="SelectedUser.FullName" />
+                           @bind="LocalUser.FullName" />
 
                     <label class="mt-2">Current Password</label>
                     <div class="input-group">
                         <input class="form-control"
                                type=@(showPassword[PwdField.Current] ? "text" : "password")
-                               @bind="CurrentPassword" />
+                               @bind="LocalUser.CurrentPassword" />
 
                         <button type="button"
                                 class="btn btn-outline-secondary"
@@ -49,7 +49,7 @@
                     <div class="input-group">
                         <input class="form-control"
                                type=@(showPassword[PwdField.New] ? "text" : "password")
-                               @bind="NewPassword" />
+                               @bind="LocalUser.NewPassword" />
 
                         <button type="button"
                                 class="btn btn-outline-secondary"
@@ -64,7 +64,7 @@
                     <div class="input-group">
                         <input class="form-control"
                                type=@(showPassword[PwdField.Confirm] ? "text" : "password")
-                               @bind="ConfirmPassword" />
+                               @bind="LocalUser.ConfirmPassword" />
 
                         <button type="button"
                                 class="btn btn-outline-secondary"
@@ -78,7 +78,7 @@
 
                 <div class="modal-footer">
                     <button class="btn btn-danger">Delete user</button>
-                    <button class="btn btn-primary" @onclick="Ok">Submit</button>
+                    <button class="btn btn-primary" @onclick="Submit">Submit</button>
                 </div>
 
             </div>
@@ -88,6 +88,32 @@
 
 
 @code {
+    private EditUser LocalUser = new();
+
+    protected override void OnParametersSet()
+    {
+        Console.WriteLine("Called OnParametersSet - clone user");
+        if (SelectedUser == null)
+            return;
+
+        // COPY values (no live reference)
+        LocalUser = new EditUser
+        {
+            Id = SelectedUser.Id,
+            Login = SelectedUser.Login,
+            FullName = SelectedUser.FullName
+        };
+
+        Console.WriteLine( "Clone no good:" + 
+            Object.ReferenceEquals(SelectedUser, LocalUser) );
+    }
+
+    public async Task Cancel()
+        => await OnCancel.InvokeAsync();
+
+    public async Task Submit()
+        => await OnSubmit.InvokeAsync(LocalUser);
+
     private enum PwdField
     {
         Current,
