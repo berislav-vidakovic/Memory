@@ -30,50 +30,63 @@
                            type="text"
                            @bind="LocalUser.FullName" />
 
-                    <label class="mt-2">Current Password</label>
-                    <div class="input-group">
-                        <input class="form-control"
-                               type=@(showPassword[PwdField.Current] ? "text" : "password")
-                               @bind="LocalUser.CurrentPassword" />
-
-                        <button type="button"
-                                class="btn btn-outline-secondary"
-                                @onclick='() => TogglePasswordVisibility(PwdField.Current)'
-                                tabindex="-1">
-                            <i class="bi @(showPassword[PwdField.Current] ? "bi-eye-slash" : "bi-eye")"></i>
-                        </button>
+                    <div class="form-check mt-3">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               id="updatePasswordCheck"
+                               @bind="UpdatePassword" />
+                        <label class="form-check-label" for="updatePasswordCheck">
+                            Update password
+                        </label>
                     </div>
 
+                    @if (@UpdatePassword)
+                    {
 
-                    <label class="mt-2">New Password</label>
-                    <div class="input-group">
-                        <input class="form-control"
-                               type=@(showPassword[PwdField.New] ? "text" : "password")
-                               @bind="LocalUser.NewPassword" />
+                        <label class="mt-2">Current Password</label>
+                        <div class="input-group">
+                            <input class="form-control"
+                            type=@(showPassword[PwdField.Current] ? "text" : "password")
+                            @bind="LocalUser.CurrentPassword" />
 
-                        <button type="button"
-                                class="btn btn-outline-secondary"
-                                @onclick='() => TogglePasswordVisibility(PwdField.New)'
-                                tabindex="-1">
-                            <i class="bi @(showPassword[PwdField.New] ? "bi-eye-slash" : "bi-eye")"></i>
-                        </button>
-                    </div>
+                            <button type="button"
+                            class="btn btn-outline-secondary"
+                            @onclick='() => TogglePasswordVisibility(PwdField.Current)'
+                            tabindex="-1">
+                                <i class="bi @(showPassword[PwdField.Current] ? "bi-eye-slash" : "bi-eye")"></i>
+                            </button>
+                        </div>
 
 
-                    <label class="mt-2">Confirm Password</label>
-                    <div class="input-group">
-                        <input class="form-control"
-                               type=@(showPassword[PwdField.Confirm] ? "text" : "password")
-                               @bind="LocalUser.ConfirmPassword" />
+                        <label class="mt-2">New Password</label>
+                        <div class="input-group">
+                            <input class="form-control"
+                            type=@(showPassword[PwdField.New] ? "text" : "password")
+                            @bind="LocalUser.NewPassword" />
 
-                        <button type="button"
-                                class="btn btn-outline-secondary"
-                                @onclick='() => TogglePasswordVisibility(PwdField.Confirm)'
-                                tabindex="-1">
-                            <i class="bi @(showPassword[PwdField.Confirm] ? "bi-eye-slash" : "bi-eye")"></i>
-                        </button>
-                    </div>
+                            <button type="button"
+                            class="btn btn-outline-secondary"
+                            @onclick='() => TogglePasswordVisibility(PwdField.New)'
+                            tabindex="-1">
+                                <i class="bi @(showPassword[PwdField.New] ? "bi-eye-slash" : "bi-eye")"></i>
+                            </button>
+                        </div>
 
+
+                        <label class="mt-2">Confirm Password</label>
+                        <div class="input-group">
+                            <input class="form-control"
+                            type=@(showPassword[PwdField.Confirm] ? "text" : "password")
+                            @bind="LocalUser.ConfirmPassword" />
+
+                            <button type="button"
+                            class="btn btn-outline-secondary"
+                            @onclick='() => TogglePasswordVisibility(PwdField.Confirm)'
+                            tabindex="-1">
+                                <i class="bi @(showPassword[PwdField.Confirm] ? "bi-eye-slash" : "bi-eye")"></i>
+                            </button>
+                        </div>
+                    }
                 </div>
 
                 <div class="modal-footer">
@@ -93,6 +106,8 @@
 
 
 @code {
+    private bool UpdatePassword { get; set; } = false;
+
     private EditUser LocalUser = new();
 
     private bool ShowInfoDialog { get; set; }
@@ -129,12 +144,48 @@
     public async Task Cancel()
         => await OnCancel.InvokeAsync();
 
+    private bool ValidateInput()
+    {
+        if (string.IsNullOrEmpty(LocalUser.Login))
+        {
+            RaiseInfoDlg("Login field Error", "Login  field cannot be empty!");
+            return false;
+        }
+
+        if (string.IsNullOrEmpty(LocalUser.FullName))
+        {
+            RaiseInfoDlg("Full Name field Error", "Full Name  field cannot be empty!");
+            return false;
+        }
+
+        if (!UpdatePassword)
+            return true;
+
+        if( string.IsNullOrEmpty(LocalUser.CurrentPassword ) || 
+            string.IsNullOrEmpty(LocalUser.NewPassword) ||
+            string.IsNullOrEmpty(LocalUser.ConfirmPassword) )
+        {
+            RaiseInfoDlg("Password field Error", "No Password field can be empty!");
+            return false;
+        }
+
+        if( LocalUser.NewPassword != LocalUser.ConfirmPassword )
+        {
+            RaiseInfoDlg("New Password mismatch", "New Password and Confirm Password do not match!");
+            return false;
+        }
+
+
+        return true;
+    }
+
     public async Task Submit() 
     {
-        RaiseInfoDlg("T", "Msg");
-        //StateHasChanged();
+        if (!ValidateInput())
+            return;
 
-       // await OnSubmit.InvokeAsync(LocalUser);
+        LocalUser.IsPasswordUpdated = UpdatePassword;
+        await OnSubmit.InvokeAsync(LocalUser);
     }
 
     #region PasswordVisibilty 

@@ -107,6 +107,41 @@ app.MapGet("/api/users", async (IServiceProvider services) =>
     return Results.Ok(users);
 });
 
+app.MapPost("/api/edituser", async (IServiceProvider services, UserDto userDto) =>
+{
+    //Console.WriteLine($"Edit user attempt: {user.Login}, PwdHashedClient: {login.PwdHashed}");
+
+    using var scope = services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    // Find user by Login
+    var user = await db.Users.FirstOrDefaultAsync(u => u.Id == userDto.Id);
+
+    if (user == null)
+    {
+        Console.WriteLine($"Edit user failed: user ID '{userDto.Id}' not found");
+        return Results.NotFound("User not found");
+    }
+
+    if (userDto.IsPasswordUpdated)
+    {
+        user.PasswordHash = HashUtil.HashPasswordServer(userDto.HashedPwd);
+        //Console.WriteLine("Password hashed server: " + user.PasswordHash);
+    }      
+
+    user.Login = userDto.Login;
+    user.FullName = userDto.FullName;
+
+    await db.SaveChangesAsync();
+
+    Console.WriteLine($"User '{user.Login}' updated");
+
+    // Return OK always
+    return Results.Ok();
+});
+
+
+
 app.MapPost("/api/login", async (IServiceProvider services, UserLoginDto login) =>
 {
     // Just log what came in for testing

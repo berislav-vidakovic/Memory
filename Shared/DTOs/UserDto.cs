@@ -12,5 +12,6 @@ public class UserDto
     public required string Login { get; set; }
     public required string HashedPwd { get; set; }
     public bool IsOnline{ get; set; }
+    public bool IsPasswordUpdated { get; set; } = false;
 
 }
