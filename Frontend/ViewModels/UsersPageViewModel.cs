@@ -31,7 +31,7 @@ public class UsersPageViewModel : ComponentBase
     public int? EditUserId{ get; set; }
     public string Password { get; set; } = string.Empty;
 
-    public int? CurrentUserId { get; private set; } = null;
+    public int? CurrentUserId { get; set; } = null;
 
     public event Action? OnStateChanged;
     

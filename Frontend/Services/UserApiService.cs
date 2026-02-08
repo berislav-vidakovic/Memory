@@ -63,6 +63,23 @@ public class UserApiService
         }
     }
 
+    public async Task<bool> DeleteAsync(UserLoginDto login)
+    {
+        // Send POST to /api/login
+        var response = await _http.PostAsJsonAsync("https://localhost:5206/api/deleteuser", login);
+
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Deletion successful!");
+            return true;
+        }
+        else
+        {
+            Console.WriteLine($"Deletion failed: {response.StatusCode}");
+            return false;
+        }
+    }
+
     public async Task<bool> LogoutAsync(UserLoginDto login)
     {
         // Send POST to /api/logout

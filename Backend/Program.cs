@@ -149,7 +149,7 @@ app.MapPost("/api/edituser", async (IServiceProvider services, UserDto userDto) 
     return Results.Ok(updatedDto);
 });
 
-/*
+
 app.MapPost("/api/deleteuser", async (IServiceProvider services, UserLoginDto userDto) =>
 {
     //Console.WriteLine($"Edit user attempt: {user.Login}, PwdHashedClient: {login.PwdHashed}");
@@ -166,33 +166,16 @@ app.MapPost("/api/deleteuser", async (IServiceProvider services, UserLoginDto us
         return Results.NotFound("User not found");
     }
 
-    if (userDto.IsPasswordUpdated)
-    {
-        user.PasswordHash = HashUtil.HashPasswordServer(userDto.HashedPwd);
-        //Console.WriteLine("Password hashed server: " + user.PasswordHash);
-    }
-
-    user.Login = userDto.Login;
-    user.FullName = userDto.FullName;
-
+    db.Users.Remove(user);
+    
     await db.SaveChangesAsync();
 
-    Console.WriteLine($"User '{user.Login}' updated");
+    Console.WriteLine($"User '{user.Id}' deleted");
 
-    // Map back to DTO to return
-    var updatedDto = new UserDto
-    {
-        Id = user.Id,
-        Login = user.Login,
-        FullName = user.FullName,
-        HashedPwd = user.PasswordHash,
-        IsPasswordUpdated = userDto.IsPasswordUpdated
-    };
-
-    return Results.Ok(updatedDto);
+    return Results.Ok();
 });
 
-*/
+
 
 
 app.MapPost("/api/login", async (IServiceProvider services, UserLoginDto login) =>

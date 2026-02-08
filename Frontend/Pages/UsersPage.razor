@@ -83,10 +83,36 @@ else
                 ShowEditUserDialog="@ShowPwdDialog"    
                 OnSubmit="HandleUserUpdate"
                 OnCancel="CloseDialog" 
+                OnDelete="DeleteUser" 
                 UpdatePassword="false"/>
 }
 
 @code {
+
+    private async Task DeleteUser(EditUser edited)
+    {
+        var user = AllUsers.FirstOrDefault(u => u.Id == edited.Id);
+        if (user == null)
+            return;
+        Console.WriteLine("delete User " + edited.Id);
+
+        UserLoginDto loginBody = new UserLoginDto
+        {
+            Id = edited.Id,
+            PwdHashed = ""
+        };
+
+        bool bSuccess = await UserService.DeleteAsync(loginBody);
+        if (bSuccess)
+        {
+            if (CurrentUserId == edited.Id)
+                CurrentUserId = null;
+            AllUsers.Remove(user);
+
+        }
+
+        ShowPwdDialog = false;
+    }
 
     private async Task HandleUserUpdate(EditUser edited)
     {

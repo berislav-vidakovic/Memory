@@ -90,7 +90,7 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button class="btn btn-danger">Delete user</button>
+                    <button class="btn btn-danger" @onclick="Delete">Delete user</button>
                     <button class="btn btn-primary" @onclick="Submit">Submit</button>
                 </div>
 
@@ -187,6 +187,11 @@
 
         LocalUser.IsPasswordUpdated = UpdatePassword;
         await OnSubmit.InvokeAsync(LocalUser);
+    }
+
+    public async Task Delete()
+    {
+        await OnDelete.InvokeAsync(LocalUser);
     }
 
     #region PasswordVisibilty 
