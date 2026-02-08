@@ -1,4 +1,6 @@
-﻿using Shared.DTOs;
+﻿using Frontend.Models;
+using Shared.DTOs;
+using System.Collections.Generic;
 using System.Net.Http.Json;
 
 namespace Frontend.Services;
@@ -12,9 +14,18 @@ public class UserApiService
         _http = http;
     }
 
-    public async Task<List<UsersResponseDto>> GetUsersAsync()
+    public async Task<List<User>> GetUsersAsync()
     {
-        return await _http.GetFromJsonAsync<List<UsersResponseDto>>("https://localhost:5206/api/users");
+        var dtos = await _http.GetFromJsonAsync<List<UsersResponseDto>>("https://localhost:5206/api/users");
+        if( dtos != null )
+            return dtos.Select(dto =>
+            {
+                var user = new User();
+                user.MapFromDto(dto);
+                return user;
+            }).ToList();
+
+        return new List<User>();
     }
 
     public async Task<bool> LoginAsync(UserLoginDto login)

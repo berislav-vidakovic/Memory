@@ -1,4 +1,5 @@
-﻿using Frontend.Pages;
+﻿using Frontend.Models;
+using Frontend.Pages;
 using Frontend.Services;
 using Microsoft.AspNetCore.Components;
 using Shared;
@@ -25,7 +26,7 @@ public class UsersPageViewModel : ComponentBase
     public UserApiService? InjectedUserService { get; set; }
 
 
-    public List<UsersResponseDto> AllUsers { get; private set; } = new();
+    public List<User> AllUsers { get; private set; } = new();
 
     public bool ShowLoginDialog { get; private set; }
     public bool ShowPwdDialog { get; set; }
@@ -56,7 +57,7 @@ public class UsersPageViewModel : ComponentBase
         OnStateChanged?.Invoke();
     }
 
-    public List<UsersResponseDto> OfflineUsers =>
+    public List<User> OfflineUsers =>
         AllUsers.Where(u => !u.IsOnline).ToList();
 
     public void OpenLoginDialog()
@@ -99,7 +100,7 @@ public class UsersPageViewModel : ComponentBase
     public async Task LoginOk()
     {
         Console.WriteLine("Login attempt login=" + SelectedLogin + " pwd=" + Password);
-        UsersResponseDto? user = AllUsers.FirstOrDefault(u => u.Login == SelectedLogin);
+        User? user = AllUsers.FirstOrDefault(u => u.Login == SelectedLogin);
 
         if (user == null)
         {
@@ -135,7 +136,7 @@ public class UsersPageViewModel : ComponentBase
     public async Task Logout()
     {
         Console.WriteLine("Logout clicked");
-        UsersResponseDto? user = AllUsers.FirstOrDefault(u => u.Id == CurrentUserId);
+        User? user = AllUsers.FirstOrDefault(u => u.Id == CurrentUserId);
 
         if (user == null)
         {

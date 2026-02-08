@@ -1,4 +1,5 @@
-﻿@using Frontend.ViewModels
+﻿@using Frontend.Models
+@using Frontend.ViewModels
 @using Microsoft.AspNetCore.Components
 @using Shared.DTOs
 
@@ -90,7 +91,7 @@
     public UsersPageViewModel? Vm { get; set; }
 
     [Parameter]
-    public List<UsersResponseDto> AllUsers { get; set; } = new();
+    public List<User> AllUsers { get; set; } = new();
 
     private enum PwdField
     {

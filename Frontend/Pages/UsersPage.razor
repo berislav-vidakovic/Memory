@@ -20,7 +20,7 @@
 }
 else
 {
-    <h3>Welcome, AllUsers.FirstOrDefault(u => u.Id == CurrentUserId)!.FullName !</h3>
+    <h3>Welcome, @(AllUsers.FirstOrDefault(u => u.Id == CurrentUserId)!.FullName)!</h3>
 
 }    
 
@@ -74,7 +74,7 @@ else
              OnConfirm="HandleLoginConfirm"
              OnCancel="LoginCancel" />
 
-<EditUserDlg 
+<UserDialog 
     Vm="vm" 
     AllUsers="vm!.AllUsers" 
  />

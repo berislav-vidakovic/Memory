@@ -1,4 +1,5 @@
-﻿@using Shared.DTOs
+﻿@using Frontend.Models
+@using Shared.DTOs
 
 @if (Show)
 {
@@ -53,7 +54,7 @@
 }
 
 @code {
-    [Parameter] public List<UsersResponseDto> OfflineUsers { get; set; } = new();
+    [Parameter] public List<User> OfflineUsers { get; set; } = new();
     [Parameter] public EventCallback<(string login, string password)> OnConfirm { get; set; }
     [Parameter] public EventCallback OnCancel { get; set; }
     [Parameter] public bool Show { get; set; }

@@ -2,6 +2,7 @@
 using Frontend.Services;
 using Shared.DTOs;
 using Shared;
+using Frontend.Models;
 
 namespace Frontend.ViewModels;
 
@@ -14,11 +15,11 @@ MVVM Architecture
 -UI just renders whatever ViewModel exposes
 */
 
-public class UsersComponentViewModel
+public class UserViewModel
 {
     private readonly UserApiService _userService;    
 
-    public List<UsersResponseDto> AllUsers { get; private set; } = new();
+    public List<User> AllUsers { get; private set; } = new();
 
     public bool ShowLoginDialog { get; private set; }
     public bool ShowPwdDialog { get; set; }
@@ -38,7 +39,7 @@ public class UsersComponentViewModel
     public event Action? OnStateChanged;
 
 
-    public UsersComponentViewModel(
+    public UserViewModel(
         UserApiService userService)
     {
         _userService = userService;
@@ -50,7 +51,7 @@ public class UsersComponentViewModel
         OnStateChanged?.Invoke();
     }
 
-    public List<UsersResponseDto> OfflineUsers =>
+    public List<User> OfflineUsers =>
         AllUsers.Where(u => !u.IsOnline).ToList();
 
     public void OpenLoginDialog()
@@ -93,7 +94,7 @@ public class UsersComponentViewModel
     public async Task LoginOk()
     {
         Console.WriteLine("Login attempt login=" + SelectedLogin + " pwd=" + Password);
-        UsersResponseDto? user = AllUsers.FirstOrDefault(u => u.Login == SelectedLogin);
+        User? user = AllUsers.FirstOrDefault(u => u.Login == SelectedLogin);
 
         if (user == null)
         {
@@ -129,7 +130,7 @@ public class UsersComponentViewModel
     public async Task Logout()
     {
         Console.WriteLine("Logout clicked");
-        UsersResponseDto? user = AllUsers.FirstOrDefault(u => u.Id == CurrentUserId);
+        User? user = AllUsers.FirstOrDefault(u => u.Id == CurrentUserId);
 
         if (user == null)
         {
