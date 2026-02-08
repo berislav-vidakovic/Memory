@@ -106,7 +106,10 @@ public class UsersPageViewModel : ComponentBase
 
         bool bSuccess = await UserService.LoginAsync(loginBody);
         if (bSuccess)
+        {
             CurrentUserId = user.Id;
+            user.IsOnline = true;
+        }
         
 
         Console.WriteLine($"Login result: {bSuccess}");
@@ -140,7 +143,10 @@ public class UsersPageViewModel : ComponentBase
 
         bool bSuccess = await UserService.LogoutAsync(logoutBody);
         if (bSuccess)
+        {
             CurrentUserId = null;
+            user.IsOnline = false;
+        }
 
         OnStateChanged?.Invoke();
         
