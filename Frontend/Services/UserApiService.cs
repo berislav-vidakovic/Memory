@@ -28,7 +28,7 @@ public class UserApiService
         return new List<User>();
     }
 
-    public async Task<bool> EditUserAsync(UserDto dto)
+    public async Task<UserDto?> EditUserAsync(UserDto dto)
     {
         // Send POST to /api/edituser
         var response = await _http.PostAsJsonAsync("https://localhost:5206/api/edituser", dto);
@@ -36,12 +36,13 @@ public class UserApiService
         if (response.IsSuccessStatusCode)
         {
             Console.WriteLine("Edit user successful!");
-            return true;
+            var updatedUser = await response.Content.ReadFromJsonAsync<UserDto>();
+            return updatedUser;
         }
         else
         {
             Console.WriteLine($"Edit user failed: {response.StatusCode}");
-            return false;
+            return null;
         }
     }
 

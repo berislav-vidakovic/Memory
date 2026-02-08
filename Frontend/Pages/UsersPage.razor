@@ -108,6 +108,8 @@ else
                 Console.WriteLine(" *** Invalid password");
                 return;
             }
+            Console.WriteLine(" *** Valid password, will be updated");
+
         }
 
         UserDto dtoUser = new()
@@ -118,8 +120,15 @@ else
             HashedPwd = HashUtil.HashClient(edited.NewPassword),
             IsPasswordUpdated = edited.IsPasswordUpdated
         };
-        bool bSuccess = await UserService.EditUserAsync(dtoUser);
-        Console.WriteLine("User updated? " + bSuccess);
+        UserDto? dto = await UserService.EditUserAsync(dtoUser);
+        Console.WriteLine("User updated? " + dto != null);
+        if( dto != null)
+        {
+            user.Login = dto.Login;
+            user.FullName = dto.FullName;
+            if (dto.IsPasswordUpdated)
+                user.HashedPwd = dto.HashedPwd;
+        }
 
 
 

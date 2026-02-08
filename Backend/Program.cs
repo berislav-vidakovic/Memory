@@ -136,8 +136,17 @@ app.MapPost("/api/edituser", async (IServiceProvider services, UserDto userDto) 
 
     Console.WriteLine($"User '{user.Login}' updated");
 
-    // Return OK always
-    return Results.Ok();
+    // Map back to DTO to return
+    var updatedDto = new UserDto
+    {
+        Id = user.Id,
+        Login = user.Login,
+        FullName = user.FullName,
+        HashedPwd = user.PasswordHash,
+        IsPasswordUpdated = userDto.IsPasswordUpdated
+    };
+
+    return Results.Ok(updatedDto);
 });
 
 
