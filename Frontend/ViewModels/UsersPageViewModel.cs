@@ -18,13 +18,8 @@ MVVM Architecture
 
 public class UsersPageViewModel : ComponentBase
 {
-    private UserApiService? _userService = default!;
-    private UserApiService UserService =>
-        _userService ??= InjectedUserService!;
-
     [Inject]
-    public UserApiService? InjectedUserService { get; set; }
-
+    public UserApiService UserService { get; set; } = default!;
 
     public List<User> AllUsers { get; private set; } = new();
 
@@ -44,12 +39,7 @@ public class UsersPageViewModel : ComponentBase
     public int? CurrentUserId { get; private set; } = null;
 
     public event Action? OnStateChanged;
-
-
-    public UsersPageViewModel(UserApiService? userService = null)
-    {
-        _userService = userService;
-    }
+    
 
     public async Task LoadUsersAsync()
     {

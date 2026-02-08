@@ -39,13 +39,9 @@ else
     </button>
 <hr />
 
-@if (vm == null)
+@if (AllUsers == null || AllUsers.Count == 0)
 {
-    <p>Loading...</p>
-}
-else if (AllUsers.Count == 0)
-{
-    <p>No users found.</p>
+    <p>Loading users ...</p>
 }
 else
 {
@@ -62,7 +58,11 @@ else
                 <tr
                     @ondblclick="() => EditUser(user.Id)">
                     <td>@user.FullName</td>
-                    <td>@(user.IsOnline ? "Online" : "Offline")</td>
+                    <td>
+                        <span class="badge @(user.IsOnline ? "bg-success" : "bg-light text-dark")">
+                            @(user.IsOnline ? " Online " : " Offline ")
+                        </span>
+                    </td>
                 </tr>
             }
         </tbody>
@@ -74,23 +74,21 @@ else
              OnConfirm="HandleLoginConfirm"
              OnCancel="LoginCancel" />
 
+    @*
 <UserDialog 
     Vm="vm" 
     AllUsers="vm!.AllUsers" 
  />
+ *@
+ 
 
 
 
 @code {
 
-
-
-    private UsersPageViewModel? vm;
-
     protected override async Task OnInitializedAsync()
     {
 
-        vm = this;
         OnStateChanged += () =>
         {
             InvokeAsync(StateHasChanged);
