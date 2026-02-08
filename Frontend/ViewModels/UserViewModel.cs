@@ -1,30 +1,56 @@
-﻿using Frontend.Pages;
+﻿using Frontend.Models;
+using Frontend.Pages;
 using Frontend.Services;
-using Shared.DTOs;
+using Microsoft.AspNetCore.Components;
 using Shared;
-using Frontend.Models;
+using Shared.DTOs;
 
 namespace Frontend.ViewModels;
 
 
-/*
-MVVM Architecture
-
--ViewModel owns UI state
--It decides what message to show
--UI just renders whatever ViewModel exposes
-*/
-
-public class UserViewModel
+public class UserViewModel : ComponentBase
 {
-    private readonly UserApiService _userService;    
+    [Inject]
+    public UserApiService UserService { get; set; } = default!;
+    
+    [Parameter]
+    public User SelectedUser { get; set; } = new();
+        
+    [Parameter]
+    public string ExistingPassword { get; set; } = string.Empty;
 
-    public User CurrentUser { get; private set; } = new();
+    [Parameter]
+    public bool ShowEditUserDialog { get; set; }
 
-    public UserViewModel(
-        UserApiService userService)
+    public string CurrentPassword { get; set; } = string.Empty;
+    public string NewPassword { get; set; } = string.Empty;
+    public string ConfirmPassword { get; set; } = string.Empty;
+
+
+    public event Action? OnStateChanged;
+
+    public void OpenEditUserDialog()
     {
-        _userService = userService;
+        ShowEditUserDialog = true;
+        OnStateChanged?.Invoke();
+    }
+
+    public void CloseEditUserDialog()
+    {
+        ShowEditUserDialog = false;
+        OnStateChanged?.Invoke();
+    }
+
+    public async Task Ok()
+    {
+        Console.WriteLine("Edit User Login=" + SelectedUser.Login);
+        CloseEditUserDialog();
+    }
+
+    public async Task Cancel()
+    {
+        CloseEditUserDialog();
     }
 
 }
+

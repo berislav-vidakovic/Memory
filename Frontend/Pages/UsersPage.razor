@@ -31,7 +31,7 @@ else
 <button class="btn btn-primary mt-2" @onclick=Logout disabled=@(CurrentUserId == null)>
         Logout
     </button>
-<button class="btn btn-primary mt-2" @onclick="() => EditCurrentUser()" disabled=@(CurrentUserId == null)>
+<button class="btn btn-primary mt-2" @onclick="() => EditUser(CurrentUserId)" disabled=@(CurrentUserId == null)>
         Edit User
     </button>
     <button class="btn btn-primary mt-2" @onclick="Register">
@@ -74,14 +74,14 @@ else
              OnConfirm="HandleLoginConfirm"
              OnCancel="LoginCancel" />
 
-    @*
-<UserDialog 
-    Vm="vm" 
-    AllUsers="vm!.AllUsers" 
- />
- *@
+@if (EditUserId != null)
+{
+    <UserDialog SelectedUser="@AllUsers!.FirstOrDefault(u => u.Id == EditUserId)"
+                ExistingPassword="@AllUsers!.FirstOrDefault(u => u.Id == EditUserId)!.HashedPwd"
+                ShowEditUserDialog="@ShowPwdDialog"     />
+}
  
-
+ 
 
 
 @code {
@@ -99,19 +99,10 @@ else
     
 
 
-    // need to keep currently for backward compatibility (legacy)
     private async Task EditUser(int? userId)
     {
-        Console.WriteLine("EditUser clicked");
+        Console.WriteLine("EditUser clicked userId=" +userId);
         EditUserId = userId;
-        ShowPwdDialog = true;
-        StateHasChanged();
-    }
-
-    private async Task EditCurrentUser()
-    {
-        Console.WriteLine("EditUser clicked");
-        EditUserId = CurrentUserId;
         ShowPwdDialog = true;
         StateHasChanged();
     }

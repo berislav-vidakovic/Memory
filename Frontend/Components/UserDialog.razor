@@ -3,8 +3,9 @@
 @using Microsoft.AspNetCore.Components
 @using Shared.DTOs
 
+@inherits UserViewModel;
 
-@if (Vm != null && Vm.ShowPwdDialog)
+@if (ShowEditUserDialog)
 {
     <div class="modal-backdrop"></div>
 
@@ -14,27 +15,19 @@
 
                 <div class="modal-header">
                     <h5 class="modal-title">Edit User</h5>
-                    <button class="btn-close" @onclick="Vm.PwdCancel"></button>
+                    <button class="btn-close" @onclick="Cancel"></button>
                 </div>                
 
                 <div class="modal-body">
 
-                    <label>User</label>
-                    <select class="form-select" @bind="Vm.EditUserId">
-                        <option value="">-- Select  user --</option>
-
-                        @foreach (var user in AllUsers)
-                        {
-                            <option value="@user.Id">@user.FullName</option>
-                        }
-                    </select>
+                    <label>User: @("SelectedUser.FullName")</label>                   
                                        
 
                     <label class="mt-2">Current Password</label>
                     <div class="input-group">
                         <input class="form-control"
                                type=@(showPassword[PwdField.Current] ? "text" : "password")
-                               @bind="Vm.CurrentPassword" />
+                               @bind="CurrentPassword" />
 
                         <button type="button"
                                 class="btn btn-outline-secondary"
@@ -49,7 +42,7 @@
                     <div class="input-group">
                         <input class="form-control"
                                type=@(showPassword[PwdField.New] ? "text" : "password")
-                               @bind="Vm.NewPassword" />
+                               @bind="NewPassword" />
 
                         <button type="button"
                                 class="btn btn-outline-secondary"
@@ -64,7 +57,7 @@
                     <div class="input-group">
                         <input class="form-control"
                                type=@(showPassword[PwdField.Confirm] ? "text" : "password")
-                               @bind="Vm.ConfirmPassword" />
+                               @bind="ConfirmPassword" />
 
                         <button type="button"
                                 class="btn btn-outline-secondary"
@@ -78,7 +71,7 @@
 
                 <div class="modal-footer">
                     <button class="btn btn-danger">Delete user</button>
-                    <button class="btn btn-primary" @onclick="Vm.PwdOk">Submit</button>
+                    <button class="btn btn-primary" @onclick="Ok">Submit</button>
                 </div>
 
             </div>
@@ -88,12 +81,6 @@
 
 
 @code {
-    [Parameter]
-    public UsersPageViewModel? Vm { get; set; }
-
-    [Parameter]
-    public List<User> AllUsers { get; set; } = new();
-
     private enum PwdField
     {
         Current,
