@@ -75,14 +75,15 @@ else
 <LoginDialog Show="ShowLoginDialog"
              OfflineUsers="OfflineUsers"
              OnConfirm="HandleLoginConfirm"
-             OnCancel="LoginCancel" />
+             OnCancel="LoginCancel"/>
 
 @if (EditUserId != null)
 {
     <UserDialog SelectedUser="@AllUsers!.FirstOrDefault(u => u.Id == EditUserId)"
                 ShowEditUserDialog="@ShowPwdDialog"    
                 OnSubmit="HandleUserUpdate"
-                OnCancel="CloseDialog" />
+                OnCancel="CloseDialog" 
+                UpdatePassword="false"/>
 }
 
 @code {
@@ -106,6 +107,8 @@ else
             if (!valid)
             {
                 Console.WriteLine(" *** Invalid password");
+                ShowPwdDialog = false;
+
                 return;
             }
             Console.WriteLine(" *** Valid password, will be updated");
@@ -129,8 +132,6 @@ else
             if (dto.IsPasswordUpdated)
                 user.HashedPwd = dto.HashedPwd;
         }
-
-
 
         ShowPwdDialog = false;
     }
@@ -170,9 +171,9 @@ else
         StateHasChanged();
     }
 
-    private async Task HandleLoginConfirm((string login, string password) data)
+    private async Task HandleLoginConfirm((int id, string password) data)
     {
-        SelectedLogin = data.login;
+        SelectedId= data.id;
         Password = data.password;
 
         await LoginOk();

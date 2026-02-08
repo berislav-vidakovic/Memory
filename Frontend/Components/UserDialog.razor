@@ -106,7 +106,8 @@
 
 
 @code {
-    private bool UpdatePassword { get; set; } = false;
+    [Parameter]
+    public bool UpdatePassword { get; set; } = false;
 
     private EditUser LocalUser = new();
 

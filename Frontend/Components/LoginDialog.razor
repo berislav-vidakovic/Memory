@@ -17,12 +17,12 @@
                 <div class="modal-body">
 
                     <label>User</label>
-                    <select class="form-select" @bind="selectedLogin">
+                    <select class="form-select" @bind="selectedId">
                         <option value="">-- Select offline user --</option>
 
                         @foreach (var user in OfflineUsers)
                         {
-                            <option value="@user.Login">@user.FullName</option>
+                            <option value="@user.Id">@user.FullName</option>
                         }
                     </select>
 
@@ -54,11 +54,11 @@
 
 @code {
     [Parameter] public List<User> OfflineUsers { get; set; } = new();
-    [Parameter] public EventCallback<(string login, string password)> OnConfirm { get; set; }
+    [Parameter] public EventCallback<(int Id, string password)> OnConfirm { get; set; }
     [Parameter] public EventCallback OnCancel { get; set; }
     [Parameter] public bool Show { get; set; }
 
-    private string? selectedLogin;
+    private int? selectedId;
     private string password = string.Empty;
     private bool showPassword;
 
@@ -67,8 +67,8 @@
 
     private async Task Confirm()
     {
-        if (!string.IsNullOrWhiteSpace(selectedLogin))
-            await OnConfirm.InvokeAsync((selectedLogin, password));
+        if (selectedId != null)
+            await OnConfirm.InvokeAsync(((int)selectedId, password));
     }
 
     private async Task Cancel()

@@ -149,22 +149,66 @@ app.MapPost("/api/edituser", async (IServiceProvider services, UserDto userDto) 
     return Results.Ok(updatedDto);
 });
 
-
-
-app.MapPost("/api/login", async (IServiceProvider services, UserLoginDto login) =>
+/*
+app.MapPost("/api/deleteuser", async (IServiceProvider services, UserLoginDto userDto) =>
 {
-    // Just log what came in for testing
-    Console.WriteLine($"Login attempt: {login.Login}, PwdHashedClient: {login.PwdHashed}");
+    //Console.WriteLine($"Edit user attempt: {user.Login}, PwdHashedClient: {login.PwdHashed}");
 
     using var scope = services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
     // Find user by Login
-    var user = await db.Users.FirstOrDefaultAsync(u => u.Login == login.Login);
+    var user = await db.Users.FirstOrDefaultAsync(u => u.Id == userDto.Id);
 
     if (user == null)
     {
-        Console.WriteLine($"Login failed: user '{login.Login}' not found");
+        Console.WriteLine($"Edit user failed: user ID '{userDto.Id}' not found");
+        return Results.NotFound("User not found");
+    }
+
+    if (userDto.IsPasswordUpdated)
+    {
+        user.PasswordHash = HashUtil.HashPasswordServer(userDto.HashedPwd);
+        //Console.WriteLine("Password hashed server: " + user.PasswordHash);
+    }
+
+    user.Login = userDto.Login;
+    user.FullName = userDto.FullName;
+
+    await db.SaveChangesAsync();
+
+    Console.WriteLine($"User '{user.Login}' updated");
+
+    // Map back to DTO to return
+    var updatedDto = new UserDto
+    {
+        Id = user.Id,
+        Login = user.Login,
+        FullName = user.FullName,
+        HashedPwd = user.PasswordHash,
+        IsPasswordUpdated = userDto.IsPasswordUpdated
+    };
+
+    return Results.Ok(updatedDto);
+});
+
+*/
+
+
+app.MapPost("/api/login", async (IServiceProvider services, UserLoginDto login) =>
+{
+    // Just log what came in for testing
+    Console.WriteLine($"Login attempt: {login.Id}, PwdHashedClient: {login.PwdHashed}");
+
+    using var scope = services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    // Find user by Login
+    var user = await db.Users.FirstOrDefaultAsync(u => u.Id == login.Id);
+
+    if (user == null)
+    {
+        Console.WriteLine($"Login failed: user iD '{login.Id}' not found");
         return Results.NotFound("User not found");
     }
 
@@ -195,17 +239,17 @@ app.MapPost("/api/login", async (IServiceProvider services, UserLoginDto login) 
 app.MapPost("/api/logout", async (IServiceProvider services, UserLoginDto login) =>
 {
     // Just log what came in for testing
-    Console.WriteLine($"Logou attempt: {login.Login}");
+    Console.WriteLine($"Logou attempt: {login.Id}");
 
     using var scope = services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
     // Find user by Login
-    var user = await db.Users.FirstOrDefaultAsync(u => u.Login == login.Login);
+    var user = await db.Users.FirstOrDefaultAsync(u => u.Id == login.Id);
 
     if (user == null)
     {
-        Console.WriteLine($"Logout failed: user '{login.Login}' not found");
+        Console.WriteLine($"Logout failed: user '{login.Id}' not found");
         return Results.NotFound("User not found");
     }
 

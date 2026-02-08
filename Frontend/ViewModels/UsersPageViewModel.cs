@@ -27,7 +27,7 @@ public class UsersPageViewModel : ComponentBase
     public bool ShowPwdDialog { get; set; }
 
 
-    public string? SelectedLogin { get; set; }
+    public int? SelectedId { get; set; }
     public int? EditUserId{ get; set; }
     public string Password { get; set; } = string.Empty;
 
@@ -55,7 +55,7 @@ public class UsersPageViewModel : ComponentBase
     {
         ShowLoginDialog = false;
         Password = string.Empty;
-        SelectedLogin = null;
+        SelectedId = null;
         OnStateChanged?.Invoke();
     }
 
@@ -84,15 +84,15 @@ public class UsersPageViewModel : ComponentBase
 
     public async Task LoginOk()
     {
-        Console.WriteLine("Login attempt login=" + SelectedLogin + " pwd=" + Password);
-        User? user = AllUsers.FirstOrDefault(u => u.Login == SelectedLogin);
+        Console.WriteLine("Login attempt login=" + SelectedId + " pwd=" + Password);
+        User? user = AllUsers.FirstOrDefault(u => u.Id == SelectedId);
 
         if (user == null)
         {
             Console.WriteLine("LOGIN FAILED: No user selected or user not found");
             return;
         }
-        Console.WriteLine($"LOGIN: {SelectedLogin}, Password: {Password}, Full name: {user.FullName}");
+        Console.WriteLine($"LOGIN: {SelectedId}, Password: {Password}, Full name: {user.FullName}");
 
         Console.WriteLine("Entered pwd: " + Password);
         string HashedPwd = HashUtil.HashClient(Password);
@@ -100,7 +100,7 @@ public class UsersPageViewModel : ComponentBase
 
         UserLoginDto loginBody = new UserLoginDto
         {
-            Login = SelectedLogin!,
+            Id = (int)SelectedId!,
             PwdHashed = HashedPwd
         };
 
@@ -137,7 +137,7 @@ public class UsersPageViewModel : ComponentBase
 
         UserLoginDto logoutBody = new UserLoginDto
         {
-            Login = user!.Login,
+            Id = user!.Id,
             PwdHashed = ""
         };
 
