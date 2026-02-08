@@ -26,11 +26,6 @@ public class UsersPageViewModel : ComponentBase
     public bool ShowLoginDialog { get; private set; }
     public bool ShowPwdDialog { get; set; }
 
-    public string? ExistingPassword { get; set; }
-    public string? CurrentPassword { get; set; }
-    public string? NewPassword { get; set; }
-    public string? ConfirmPassword { get; set; }
-
 
     public string? SelectedLogin { get; set; }
     public int? EditUserId{ get; set; }
@@ -99,7 +94,9 @@ public class UsersPageViewModel : ComponentBase
         }
         Console.WriteLine($"LOGIN: {SelectedLogin}, Password: {Password}, Full name: {user.FullName}");
 
+        Console.WriteLine("Entered pwd: " + Password);
         string HashedPwd = HashUtil.HashClient(Password);
+        Console.WriteLine("ClientHashed  pwd: " + HashedPwd);
 
         UserLoginDto loginBody = new UserLoginDto
         {

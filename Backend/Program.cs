@@ -93,7 +93,7 @@ app.MapGet("/api/users", async (IServiceProvider services) =>
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     
     var users = await db.Users
-        .Select(u => new UsersResponseDto
+        .Select(u => new UserDto
         {
             FullName = u.FullName,
             IsOnline = u.IsOnline,
@@ -110,7 +110,7 @@ app.MapGet("/api/users", async (IServiceProvider services) =>
 app.MapPost("/api/login", async (IServiceProvider services, UserLoginDto login) =>
 {
     // Just log what came in for testing
-    Console.WriteLine($"Login attempt: {login.Login}, PwdHashed: {login.PwdHashed}");
+    Console.WriteLine($"Login attempt: {login.Login}, PwdHashedClient: {login.PwdHashed}");
 
     using var scope = services.CreateScope();
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -125,7 +125,10 @@ app.MapPost("/api/login", async (IServiceProvider services, UserLoginDto login) 
     }
 
     if (string.IsNullOrEmpty(user.PasswordHash))  // 1st time login    
-        user.PasswordHash = HashUtil.HashPasswordServer(login.PwdHashed);    
+    {
+        user.PasswordHash = HashUtil.HashPasswordServer(login.PwdHashed);
+        Console.WriteLine("Password hashed server: " + user.PasswordHash);
+    }
     else
     {
         // Password verification

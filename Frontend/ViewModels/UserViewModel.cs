@@ -12,7 +12,8 @@ public class UserViewModel : ComponentBase
 {
     [Inject]
     public UserApiService UserService { get; set; } = default!;
-    
+
+    #region Parameters
     [Parameter]
     public User SelectedUser { get; set; } = new();
         
@@ -21,6 +22,7 @@ public class UserViewModel : ComponentBase
 
     [Parameter]
     public bool ShowEditUserDialog { get; set; }
+    #endregion
 
     public string CurrentPassword { get; set; } = string.Empty;
     public string NewPassword { get; set; } = string.Empty;
@@ -44,7 +46,35 @@ public class UserViewModel : ComponentBase
     public async Task Ok()
     {
         Console.WriteLine("Edit User Login=" + SelectedUser.Login);
+
+        Console.WriteLine("Existing Password : " + ExistingPassword);
+        Console.WriteLine("Entered Password : " + CurrentPassword);
+        //CloseEditUserDialog();
+
+        //return;
+
+        if ( !ValidateCurrentPassword() )
+        {
+            Console.WriteLine("Invalid password");
+        }
+        else
+        {
+            Console.WriteLine("VALID password");
+
+        }
+
+
+
+
         CloseEditUserDialog();
+    }
+
+    private bool ValidateCurrentPassword()
+    {
+
+        string currPwd = HashUtil.HashClient(CurrentPassword);
+        bool result = HashUtil.VerifyPasswordServer(currPwd, ExistingPassword);
+        return result;
     }
 
     public async Task Cancel()

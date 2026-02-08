@@ -5,7 +5,7 @@ using System.Text;
 namespace Shared.DTOs;
 
 
-public class UsersResponseDto
+public class UserDto
 {
     public int Id { get; set; }
     public required string FullName { get; set; }

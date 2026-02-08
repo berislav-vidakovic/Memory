@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 
 namespace Shared
 {
-    public class HashUtil
+    public static class HashUtil
     {
+        // Client-side hash (kept)
         public static string HashClient(string password)
         {
             using var sha1 = SHA1.Create();
@@ -14,6 +14,7 @@ namespace Shared
             return Convert.ToBase64String(bytes);
         }
 
+        // Generate random salt
         public static string GenerateSalt(int size = 16)
         {
             var bytes = new byte[size];
@@ -22,57 +23,54 @@ namespace Shared
             return Convert.ToBase64String(bytes);
         }
 
+        // Server-side hash using HMAC-SHA256 with salt
         public static string HashPasswordServer(string clientHash)
         {
-            const int saltSize = 16;     // 128-bit salt
-            const int keySize = 32;      // 256-bit derived key
-            const int iterations = 100_000;
+            string salt = GenerateSalt(); // 16-byte random salt
+            using var hmac = new HMACSHA256(Convert.FromBase64String(salt));
+            byte[] key = hmac.ComputeHash(Encoding.UTF8.GetBytes(clientHash));
 
-            // Generate salt
-            byte[] salt = RandomNumberGenerator.GetBytes(saltSize);
-
-            // PBKDF2 derive key
-            byte[] key = Rfc2898DeriveBytes.Pbkdf2(
-                password: Encoding.UTF8.GetBytes(clientHash),
-                salt: salt,
-                iterations: iterations,
-                hashAlgorithm: HashAlgorithmName.SHA256,
-                outputLength: keySize
-            );
-
-            // Combine salt + key into one byte array
-            byte[] result = new byte[saltSize + keySize];
-            Buffer.BlockCopy(salt, 0, result, 0, saltSize);
-            Buffer.BlockCopy(key, 0, result, saltSize, keySize);
+            // Store as Base64(salt + hash)
+            byte[] result = new byte[16 + key.Length];
+            Array.Copy(Convert.FromBase64String(salt), 0, result, 0, 16);
+            Array.Copy(key, 0, result, 16, key.Length);
 
             return Convert.ToBase64String(result);
         }
 
+        // Verify password
         public static bool VerifyPasswordServer(string clientHash, string storedHash)
         {
-            const int saltSize = 16;
-            const int keySize = 32;
-            const int iterations = 100_000;
+            if (string.IsNullOrEmpty(storedHash))
+                return false;
 
-            byte[] storedBytes = Convert.FromBase64String(storedHash);
+            byte[] storedBytes;
+            try
+            {
+                storedBytes = Convert.FromBase64String(storedHash);
+            }
+            catch
+            {
+                return false;
+            }
 
-            byte[] salt = new byte[saltSize];
-            byte[] storedKey = new byte[keySize];
+            if (storedBytes.Length < 16)
+                return false;
 
-            Buffer.BlockCopy(storedBytes, 0, salt, 0, saltSize);
-            Buffer.BlockCopy(storedBytes, saltSize, storedKey, 0, keySize);
+            // Extract salt
+            byte[] salt = new byte[16];
+            Array.Copy(storedBytes, 0, salt, 0, 16);
 
-            byte[] computedKey = Rfc2898DeriveBytes.Pbkdf2(
-                password: Encoding.UTF8.GetBytes(clientHash),
-                salt: salt,
-                iterations: iterations,
-                hashAlgorithm: HashAlgorithmName.SHA256,
-                outputLength: keySize
-            );
+            // Extract stored key
+            int keyLength = storedBytes.Length - 16;
+            byte[] storedKey = new byte[keyLength];
+            Array.Copy(storedBytes, 16, storedKey, 0, keyLength);
+
+            // Recompute key with same salt
+            using var hmac = new HMACSHA256(salt);
+            byte[] computedKey = hmac.ComputeHash(Encoding.UTF8.GetBytes(clientHash));
 
             return CryptographicOperations.FixedTimeEquals(storedKey, computedKey);
         }
-
-
     }
 }

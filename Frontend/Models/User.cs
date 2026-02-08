@@ -10,7 +10,7 @@ namespace Frontend.Models
         public string HashedPwd { get; set; } = string.Empty;
         public bool IsOnline { get; set; }
 
-        public void MapFromDto(UsersResponseDto dto)
+        public void MapFromDto(UserDto dto)
         {
             Id = dto.Id;
             FullName = dto.FullName;

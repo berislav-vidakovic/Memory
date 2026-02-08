@@ -16,7 +16,7 @@ public class UserApiService
 
     public async Task<List<User>> GetUsersAsync()
     {
-        var dtos = await _http.GetFromJsonAsync<List<UsersResponseDto>>("https://localhost:5206/api/users");
+        var dtos = await _http.GetFromJsonAsync<List<UserDto>>("https://localhost:5206/api/users");
         if( dtos != null )
             return dtos.Select(dto =>
             {

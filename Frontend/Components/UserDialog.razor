@@ -20,8 +20,15 @@
 
                 <div class="modal-body">
 
-                    <label>User: @("SelectedUser.FullName")</label>                   
-                                       
+                    <label class="mt-2">Login</label>
+                    <input class="form-control"
+                           type="text"
+                           @bind="SelectedUser.Login" />
+
+                    <label class="mt-2">Full Name</label>
+                    <input class="form-control"
+                           type="text"
+                           @bind="SelectedUser.FullName" />
 
                     <label class="mt-2">Current Password</label>
                     <div class="input-group">
