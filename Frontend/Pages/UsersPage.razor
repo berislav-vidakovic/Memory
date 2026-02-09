@@ -1,14 +1,17 @@
 ﻿@page "/usersPage"
-@inject Frontend.Services.UserApiService UserService
+
 
 @using Frontend.Components
 @using Frontend.Models
+@using Frontend.Services
 @using Frontend.ViewModels
 @using Shared
 @using Shared.DTOs
 
 @inherits UsersPageViewModel;
 
+@inject Frontend.Services.UserApiService UserService1
+@inject NotificationService NotificationService
 
 
 
@@ -251,7 +254,20 @@ else
         };
 
         await LoadUsersAsync();
+
+        NotificationService.OnUserLoggedIn += HandleUserLoggedIn;
     }
+
+    private void HandleUserLoggedIn(int userId)
+    {
+        var user = AllUsers?.FirstOrDefault(u => u.Id == userId);
+        if (user != null)
+        {
+            user.IsOnline = true;
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
     
 
 

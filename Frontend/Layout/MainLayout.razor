@@ -1,4 +1,7 @@
-﻿@inherits LayoutComponentBase
+﻿@using Frontend.Services
+@inherits LayoutComponentBase
+@inject NotificationService NotificationService
+
 <div class="page">
     <div class="sidebar">
         <NavMenu />
@@ -14,3 +17,10 @@
         </article>
     </main>
 </div>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await NotificationService.StartAsync();
+    }
+}

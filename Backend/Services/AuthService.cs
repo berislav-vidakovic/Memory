@@ -1,4 +1,6 @@
 ﻿using Backend.Data;
+using Backend.Hubs;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Shared;
 using Shared.DTOs;
@@ -9,9 +11,12 @@ public class AuthService : IAuthService
 {
     private readonly AppDbContext _db;
 
-    public AuthService(AppDbContext db)
+    private readonly IHubContext<NotificationHub> _hub;
+
+    public AuthService(AppDbContext db, IHubContext<NotificationHub> hub)
     {
         _db = db;
+        _hub = hub;
     }
 
     public async Task<ServiceResult> LoginAsync(UserLoginDto login)
@@ -35,6 +40,8 @@ public class AuthService : IAuthService
 
         user.IsOnline = true;
         await _db.SaveChangesAsync();
+
+        await _hub.Clients.All.SendAsync("UserLoggedIn", user.Id);
 
         return ServiceResult.Ok();
     }

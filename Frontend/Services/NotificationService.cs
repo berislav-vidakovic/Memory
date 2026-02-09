@@ -6,6 +6,7 @@ public class NotificationService
 {
     private HubConnection? _connection;
 
+    public event Action<int>? OnUserLoggedIn;
 
     public async Task StartAsync()
     {
@@ -16,7 +17,12 @@ public class NotificationService
             .WithAutomaticReconnect()
             .Build();
 
-        
+        _connection.On<int>("UserLoggedIn", userId =>
+        {
+            Console.WriteLine($"SignalR: User logged in: {userId}");
+            OnUserLoggedIn?.Invoke(userId);
+        });
+
         await _connection.StartAsync();
         Console.WriteLine("SignalR connected!");
     }
