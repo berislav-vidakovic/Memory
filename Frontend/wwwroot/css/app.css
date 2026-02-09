@@ -125,3 +125,54 @@ code {
 .modal.show.d-block {
     z-index: 1050;
 }
+
+.context-menu {
+    background: #eee;
+    border: 1px solid #ccc;
+    box-shadow: 0 2px 5px rgba(0,0,0,.2);
+    z-index: 1000;
+    padding: 0 8px;
+}
+
+/* Form on the right side */
+.dock-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.15);
+    z-index: 900;
+}
+
+.dock-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 50vw;
+    height: 100vh;
+    background: white;
+    box-shadow: -3px 0 12px rgba(0,0,0,.25);
+    z-index: 1050;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+}
+
+.dock-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.dock-body {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 0 8px;
+}
+
+.dock-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 12px;
+}
+
+

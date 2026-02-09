@@ -59,7 +59,9 @@ else
             @foreach (var user in AllUsers)
             {
                 <tr
-                    @ondblclick="() => EditUser(user.Id)">
+                    @ondblclick="() => EditUser(user.Id)"
+                    @oncontextmenu="(e) => OnRowRightClick(e, user.Id)"
+                    @oncontextmenu:preventDefault="true">
                     <td>@user.FullName</td>
                     <td>
                         <span class="badge @(user.IsOnline ? "bg-success" : "bg-light text-dark")">
@@ -85,9 +87,80 @@ else
                 OnCancel="CloseDialog" 
                 OnDelete="DeleteUser" 
                 UpdatePassword="false"/>
+
 }
 
+@if (ShowContextMenu)
+{
+    <div class="context-menu"
+         style="position:fixed; top:@(ContextMenuY + "px"); left:@(ContextMenuX + "px");"
+         @onclick="() => ShowContextMenu = false">
+
+        <button class="dropdown-item"
+                @onclick="() => EditUserForm(ContextMenuUserId)">
+            Edit User
+        </button>
+    </div>
+}
+
+@if (ShowDockedEditor && DockedUserId != null)
+{
+    <div class="dock-overlay" @onclick="CloseDockedEditor"></div>
+
+    <div class="dock-panel">
+        <div class="dock-header">
+            <h5>Edit User</h5>
+            <button class="btn btn-sm btn-secondary" @onclick="CloseDockedEditor">X</button>
+        </div>
+
+        <UserForm SelectedUser="@AllUsers!.FirstOrDefault(u => u.Id == DockedUserId)"
+                  ShowEditUserDialog="@ShowDockedEditor"
+                  AllUsers="@AllUsers"
+                  CurrentUserId="@CurrentUserId"
+                  UpdatePassword="false" 
+                  OnClose="CloseDockedEditor" />
+    </div>
+}
+
+
+
 @code {
+    private bool ShowDockedEditor;
+    private int? DockedUserId;
+    private bool ShowContextMenu;
+    private double ContextMenuX;
+    private double ContextMenuY;
+    private int ContextMenuUserId;
+
+    private void CloseDockedEditor()
+    {
+        ShowDockedEditor = false;
+        DockedUserId = null;
+    }
+
+    private void OnRowRightClick(MouseEventArgs e, int userId)
+    {
+        ContextMenuUserId = userId;
+        ContextMenuX = e.ClientX;
+        ContextMenuY = e.ClientY;
+        ShowContextMenu = true;
+
+        StateHasChanged();
+
+    }
+
+    private void EditUserForm(int userId)
+    {
+        ShowContextMenu = false;
+        
+        Console.WriteLine("EditUserForm called for userId=" + userId);
+
+        DockedUserId = userId;
+        ShowDockedEditor = true;
+        StateHasChanged();
+
+    }
+
 
     private async Task DeleteUser(EditUser edited)
     {
@@ -166,6 +239,8 @@ else
     {
         ShowPwdDialog = false;
     }
+
+
 
     protected override async Task OnInitializedAsync()
     {

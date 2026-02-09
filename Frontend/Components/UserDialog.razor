@@ -106,8 +106,10 @@
 
 
 @code {
-    [Parameter]
-    public bool UpdatePassword { get; set; } = false;
+    [Parameter] public bool UpdatePassword { get; set; } = false;
+    [Parameter] public EventCallback<EditUser> OnSubmit { get; set; }
+    [Parameter] public EventCallback<EditUser> OnDelete { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
 
     private EditUser LocalUser = new();
 

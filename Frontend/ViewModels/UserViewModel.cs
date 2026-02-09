@@ -17,9 +17,7 @@ public class UserViewModel : ComponentBase
     [Parameter]
     public User SelectedUser { get; set; } = new();
 
-    [Parameter] public EventCallback<EditUser> OnSubmit { get; set; }
-    [Parameter] public EventCallback<EditUser> OnDelete{ get; set; }
-    [Parameter] public EventCallback OnCancel { get; set; }
+
 
     [Parameter]
     public bool ShowEditUserDialog { get; set; }
