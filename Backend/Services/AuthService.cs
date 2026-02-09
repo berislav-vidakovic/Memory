@@ -46,4 +46,23 @@ public class AuthService : IAuthService
         return ServiceResult.Ok();
     }
 
+    public async Task<ServiceResult> LogoutAsync(UserLoginDto login)
+    {
+
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == login.Id);
+
+        if (user == null)
+            return ServiceResult.Fail("UserNotFound");
+
+
+        user.IsOnline = false;
+        await _db.SaveChangesAsync();
+
+        Console.WriteLine($"User '{user.Login}' set to offline");
+
+        await _hub.Clients.All.SendAsync("UserLoggedOut", user.Id);
+
+        return ServiceResult.Ok();
+    }
+
 }

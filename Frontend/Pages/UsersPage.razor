@@ -256,6 +256,7 @@ else
         await LoadUsersAsync();
 
         NotificationService.OnUserLoggedIn += HandleUserLoggedIn;
+        NotificationService.OnUserLoggedOut += HandleUserLoggedOut;
     }
 
     private void HandleUserLoggedIn(int userId)
@@ -264,6 +265,16 @@ else
         if (user != null)
         {
             user.IsOnline = true;
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private void HandleUserLoggedOut(int userId)
+    {
+        var user = AllUsers?.FirstOrDefault(u => u.Id == userId);
+        if (user != null)
+        {
+            user.IsOnline = false;
             InvokeAsync(StateHasChanged);
         }
     }

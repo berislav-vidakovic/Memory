@@ -196,76 +196,20 @@ app.MapPost("/api/login", async (IAuthService auth, UserLoginDto login) =>
 });
 
 
-// old login
-/*
-app.MapPost("/api/login", async (IServiceProvider services, UserLoginDto login) =>
+app.MapPost("/api/logout", async (IAuthService auth, UserLoginDto login) =>
 {
-    // Just log what came in for testing
-    Console.WriteLine($"Login attempt: {login.Id}, PwdHashedClient: {login.PwdHashed}");
+    var result = await auth.LogoutAsync(login);
 
-    using var scope = services.CreateScope();
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    if (result.Success)
+        return Results.Ok();
 
-    // Find user by Login
-    var user = await db.Users.FirstOrDefaultAsync(u => u.Id == login.Id);
-
-    if (user == null)
+    switch (result.Error)
     {
-        Console.WriteLine($"Login failed: user iD '{login.Id}' not found");
-        return Results.NotFound("User not found");
-    }
-
-    if (string.IsNullOrEmpty(user.PasswordHash))  // 1st time login    
-    {
-        user.PasswordHash = HashUtil.HashPasswordServer(login.PwdHashed);
-        Console.WriteLine("Password hashed server: " + user.PasswordHash);
-    }
-    else
-    {
-        // Password verification
-        bool valid = HashUtil.VerifyPasswordServer(login.PwdHashed, user.PasswordHash);
-
-        if (!valid)
-            return Results.Unauthorized();
-    }
-
-    user.IsOnline = true;
-
-    await db.SaveChangesAsync();
-
-    Console.WriteLine($"User '{user.Login}' set to online");
-
-    // Return OK always
-    return Results.Ok();
-});
-
-*/
-
-
-app.MapPost("/api/logout", async (IServiceProvider services, UserLoginDto login) =>
-{
-    // Just log what came in for testing
-    Console.WriteLine($"Logou attempt: {login.Id}");
-
-    using var scope = services.CreateScope();
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-
-    // Find user by Login
-    var user = await db.Users.FirstOrDefaultAsync(u => u.Id == login.Id);
-
-    if (user == null)
-    {
-        Console.WriteLine($"Logout failed: user '{login.Id}' not found");
-        return Results.NotFound("User not found");
-    }
-
-    user.IsOnline = false;
-    await db.SaveChangesAsync();
-
-    Console.WriteLine($"User '{user.Login}' set to offline");
-
-    // Return OK always
-    return Results.Ok();
+        case "UserNotFound":
+            return Results.NotFound();
+        default:
+            return Results.BadRequest();
+    };
 });
 
 

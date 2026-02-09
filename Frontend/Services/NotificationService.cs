@@ -7,6 +7,7 @@ public class NotificationService
     private HubConnection? _connection;
 
     public event Action<int>? OnUserLoggedIn;
+    public event Action<int>? OnUserLoggedOut;
 
     public async Task StartAsync()
     {
@@ -21,6 +22,12 @@ public class NotificationService
         {
             Console.WriteLine($"SignalR: User logged in: {userId}");
             OnUserLoggedIn?.Invoke(userId);
+        });
+
+        _connection.On<int>("UserLoggedOut", userId =>
+        {
+            Console.WriteLine($"SignalR: User logged out: {userId}");
+            OnUserLoggedOut?.Invoke(userId);
         });
 
         await _connection.StartAsync();

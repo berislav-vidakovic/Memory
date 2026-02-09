@@ -5,5 +5,6 @@ namespace Backend.Services
     public interface IAuthService
     {
         Task<ServiceResult> LoginAsync(UserLoginDto login);
+        Task<ServiceResult> LogoutAsync(UserLoginDto login);
     }
 }
