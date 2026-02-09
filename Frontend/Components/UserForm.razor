@@ -11,16 +11,17 @@
     <div class="dock-body">
         <div>
             <label class="mt-2">Login</label>
-            <input class="form-control" type="text" @bind="LocalUser.Login" />
+            <input class="form-control" type="text" @bind="LocalUser.Login" disabled="@IsLoading" />
 
             <label class="mt-2">Full Name</label>
-            <input class="form-control" type="text" @bind="LocalUser.FullName" />
+            <input class="form-control" type="text" @bind="LocalUser.FullName" disabled="@IsLoading" />
 
             <div class="form-check mt-3">
                 <input class="form-check-input"
                         type="checkbox"
                         id="updatePasswordCheck"
-                        @bind="UpdatePassword" />
+                        @bind="UpdatePassword"
+                        disabled="@IsLoading" />
                 <label class="form-check-label" for="updatePasswordCheck">
                     Update password
                 </label>
@@ -33,12 +34,14 @@
                 <div class="input-group">
                     <input class="form-control"
                             type=@(showPassword[PwdField.Current] ? "text" : "password")
-                            @bind="LocalUser.CurrentPassword" />
+                            @bind="LocalUser.CurrentPassword" 
+                            disabled="@IsLoading" />
 
                     <button type="button"
                             class="btn btn-outline-secondary"
                             @onclick='() => TogglePasswordVisibility(PwdField.Current)'
-                            tabindex="-1">
+                            tabindex="-1"
+                            disabled="@IsLoading">
                         <i class="bi @(showPassword[PwdField.Current] ? "bi-eye-slash" : "bi-eye")"></i>
                     </button>
                 </div>
@@ -48,12 +51,14 @@
                 <div class="input-group">
                     <input class="form-control"
                             type=@(showPassword[PwdField.New] ? "text" : "password")
-                            @bind="LocalUser.NewPassword" />
+                            @bind="LocalUser.NewPassword" 
+                            disabled="@IsLoading" />
 
                     <button type="button"
                             class="btn btn-outline-secondary"
                             @onclick='() => TogglePasswordVisibility(PwdField.New)'
-                            tabindex="-1">
+                            tabindex="-1"
+                            disabled="@IsLoading">
                         <i class="bi @(showPassword[PwdField.New] ? "bi-eye-slash" : "bi-eye")"></i>
                     </button>
                 </div>
@@ -63,12 +68,14 @@
                 <div class="input-group">
                     <input class="form-control"
                             type=@(showPassword[PwdField.Confirm] ? "text" : "password")
-                            @bind="LocalUser.ConfirmPassword" />
+                            @bind="LocalUser.ConfirmPassword" 
+                            disabled="@IsLoading" />
 
                     <button type="button"
                             class="btn btn-outline-secondary"
                             @onclick='() => TogglePasswordVisibility(PwdField.Confirm)'
-                            tabindex="-1">
+                            tabindex="-1"
+                            disabled="@IsLoading">
                         <i class="bi @(showPassword[PwdField.Confirm] ? "bi-eye-slash" : "bi-eye")"></i>
                     </button>
                 </div>
@@ -78,9 +85,9 @@
                     
 
     <div class="dock-footer">
-            <button class="btn btn-danger" @onclick="Delete">Delete user</button>
-            <button class="btn btn-primary" @onclick="Submit">Submit</button>
-        </div>
+        <button class="btn btn-danger" @onclick="Delete" disabled="@IsLoading">Delete user</button>
+        <button class="btn btn-primary" @onclick="Submit" disabled="@IsLoading">Submit</button>
+    </div>
     
 
     <InfoDialog Show="@ShowInfoDialog"
@@ -88,6 +95,15 @@
                 Message="@InfoMessage"
                 OnClose="() => ShowInfoDialog = false" />
 
+@if (IsLoading)
+{
+    <div class="loading-overlay">
+        <div class="loading-box">
+            <div class="spinner-border mb-2"></div>
+            <div>@LoadingMessage</div>
+        </div>
+    </div>
+}
 
 
 @code {
@@ -101,6 +117,10 @@
 
     [Parameter]
     public int? CurrentUserId { get; set; } 
+
+    private bool IsLoading;
+    private string LoadingMessage = "Processing...";
+
 
     private EditUser LocalUser = new();
 
@@ -255,8 +275,20 @@
         if (!ValidateInput())
             return;
 
-        LocalUser.IsPasswordUpdated = UpdatePassword;
-        await HandleUserUpdate(LocalUser);
+        try
+        {
+            IsLoading = true;
+            LoadingMessage = "Processing...";
+            StateHasChanged();
+
+            LocalUser.IsPasswordUpdated = UpdatePassword;
+            await HandleUserUpdate(LocalUser);
+        }
+        finally
+        {
+            IsLoading = false;
+            StateHasChanged();
+        }
     }
 
     public async Task Delete()
