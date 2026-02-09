@@ -34,6 +34,8 @@ public class UserService : IUserService
 
         Console.WriteLine($"User '{user.Id}' deleted");
 
+        await _hub.Clients.All.SendAsync("UserDeleted", userDto.Id);
+
         return ServiceResult.Ok();
     }
     public async Task<ServiceResult> EditAsync(UserDto userDto)
@@ -70,10 +72,11 @@ public class UserService : IUserService
             IsPasswordUpdated = userDto.IsPasswordUpdated
         };
 
+        await _hub.Clients.All.SendAsync("UserUpdated", updatedDto);
+
         ServiceResult res = ServiceResult.Ok();
         res.user = updatedDto;
         return res;
-
     }
 
        

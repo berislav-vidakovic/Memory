@@ -155,7 +155,7 @@ else
     private void EditUserForm(int userId)
     {
         ShowContextMenu = false;
-        
+
         Console.WriteLine("EditUserForm called for userId=" + userId);
 
         DockedUserId = userId;
@@ -257,7 +257,32 @@ else
 
         NotificationService.OnUserLoggedIn += HandleUserLoggedIn;
         NotificationService.OnUserLoggedOut += HandleUserLoggedOut;
+        NotificationService.OnUserUpdated += HandleUserUpdated;
+        NotificationService.OnUserDeleted += HandleUserDeleted;
     }
+
+    private void HandleUserDeleted(int userId)
+    {
+        var user = AllUsers?.FirstOrDefault(u => u.Id == userId);
+        if (user != null)
+        {
+            AllUsers!.Remove(user);
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
+    private void HandleUserUpdated(UserDto userDto)
+    {
+        var user = AllUsers?.FirstOrDefault(u => u.Id == userDto.Id);
+        if (user != null)
+        {
+            user.Login = userDto.Login;
+            user.FullName = userDto.FullName;
+            user.HashedPwd = userDto.HashedPwd;
+            InvokeAsync(StateHasChanged);
+        }
+    }
+
 
     private void HandleUserLoggedIn(int userId)
     {

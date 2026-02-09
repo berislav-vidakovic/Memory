@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR.Client;
+using Shared.DTOs;
 
 namespace Frontend.Services;
 
@@ -8,6 +9,9 @@ public class NotificationService
 
     public event Action<int>? OnUserLoggedIn;
     public event Action<int>? OnUserLoggedOut;
+    public event Action<UserDto>? OnUserUpdated;
+    public event Action<int>? OnUserDeleted;
+
 
     public async Task StartAsync()
     {
@@ -28,6 +32,18 @@ public class NotificationService
         {
             Console.WriteLine($"SignalR: User logged out: {userId}");
             OnUserLoggedOut?.Invoke(userId);
+        });
+
+        _connection.On<UserDto>("UserUpdated", userDto =>
+        {
+            Console.WriteLine($"SignalR: User update: {userDto.Id}");
+            OnUserUpdated?.Invoke(userDto);
+        });
+
+        _connection.On<int>("UserDeleted", userId =>
+        {
+            Console.WriteLine($"SignalR: User deleted: {userId}");
+            OnUserDeleted?.Invoke(userId);
         });
 
         await _connection.StartAsync();
