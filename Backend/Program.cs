@@ -1,5 +1,6 @@
 using Backend.Data;
 using Backend.Hubs;
+using Backend.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Shared;
@@ -27,7 +28,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSignalR();
 
-
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddCors(options =>
 {
@@ -176,8 +177,27 @@ app.MapPost("/api/deleteuser", async (IServiceProvider services, UserLoginDto us
 });
 
 
+app.MapPost("/api/login", async (IAuthService auth, UserLoginDto login) =>
+{
+    var result = await auth.LoginAsync(login);
+
+    if (result.Success)
+        return Results.Ok();
+
+    switch (result.Error)
+    {
+        case "UserNotFound":
+            return Results.NotFound();
+        case "InvalidPassword":
+            return Results.Unauthorized();
+        default:
+            return Results.BadRequest();
+    };
+});
 
 
+// old login
+/*
 app.MapPost("/api/login", async (IServiceProvider services, UserLoginDto login) =>
 {
     // Just log what came in for testing
@@ -218,6 +238,9 @@ app.MapPost("/api/login", async (IServiceProvider services, UserLoginDto login) 
     // Return OK always
     return Results.Ok();
 });
+
+*/
+
 
 app.MapPost("/api/logout", async (IServiceProvider services, UserLoginDto login) =>
 {
