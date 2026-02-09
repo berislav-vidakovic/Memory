@@ -29,6 +29,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddCors(options =>
 {
@@ -87,25 +88,14 @@ app.MapGet("/api/health", async (IServiceProvider services) =>
     return Results.Ok(resp);
 });
 
-app.MapGet("/api/users", async (IServiceProvider services) =>
+app.MapGet("/api/users", async (IUserService userService) =>
 {
-    
-    using var scope = services.CreateScope();
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    
-    var users = await db.Users
-        .Select(u => new UserDto
-        {
-            FullName = u.FullName,
-            IsOnline = u.IsOnline,
-            Login = u.Login,
-            Id = u.Id,
-            HashedPwd = u.PasswordHash
-        })
-        .ToListAsync();
-    
+    ServiceResult result = await userService.GetAllUsersAsync();
 
-    return Results.Ok(users);
+    if (result.Success)
+        return Results.Ok(result.users);
+
+     return Results.NotFound();
 });
 
 app.MapPost("/api/edituser", async (IServiceProvider services, UserDto userDto) =>
@@ -166,6 +156,7 @@ app.MapPost("/api/deleteuser", async (IServiceProvider services, UserLoginDto us
         Console.WriteLine($"Edit user failed: user ID '{userDto.Id}' not found");
         return Results.NotFound("User not found");
     }
+    
 
     db.Users.Remove(user);
     
