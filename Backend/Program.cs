@@ -1,8 +1,9 @@
-using Shared.DTOs;
-using Shared;
 using Backend.Data;
+using Backend.Hubs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Shared;
+using Shared.DTOs;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -60,8 +61,7 @@ app.UseHttpsRedirection();
 
 app.MapHub<Backend.Hubs.ChatHub>("/hubs/chat");
 
-
-// Startup logic: read first Health record
+app.MapHub<NotificationHub>("/hubs/notification");
 
 
 

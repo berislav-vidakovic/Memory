@@ -17,6 +17,7 @@ builder.Services.AddScoped<HealthApiService>();
 builder.Services.AddScoped<UserApiService>();
 
 builder.Services.AddSingleton<ChatSignalRService>();
+builder.Services.AddSingleton<NotificationService>();
 
 
 
