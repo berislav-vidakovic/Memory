@@ -10,7 +10,8 @@ namespace Backend.Services
         public static ServiceResult Ok() => new() { Success = true };
         public static ServiceResult Fail(string error) => new() { Success = false, Error = error };
 
-        public List<UserDto>? users = null;
+        public List<UserDto>? allUsers = null;
+        public UserDto? user = null;
     }
 
 }

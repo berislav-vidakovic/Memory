@@ -19,14 +19,60 @@ public class UserService : IUserService
         _hub = hub;
     }
 
-    public async Task<ServiceResult> DeleteAsync(UserLoginDto login)
+    public async Task<ServiceResult> DeleteAsync(UserLoginDto userDto)
     {
-        return ServiceResult.Ok();
+        // Find user by Login
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == userDto.Id);
 
-    }
-    public async Task<ServiceResult> EditAsync(UserDto login)
-    {
+        if (user == null)        
+            return ServiceResult.Fail("UserNotFound");        
+        else if( user.IsOnline )
+            return ServiceResult.Fail("UserIsOnline");
+
+        _db.Users.Remove(user);
+        await _db.SaveChangesAsync();
+
+        Console.WriteLine($"User '{user.Id}' deleted");
+
         return ServiceResult.Ok();
+    }
+    public async Task<ServiceResult> EditAsync(UserDto userDto)
+    {
+        // Find user by Login
+        var user = await _db.Users.FirstOrDefaultAsync(u => u.Id == userDto.Id);
+
+        if (user == null)
+        {
+            Console.WriteLine($"Edit user failed: user ID '{userDto.Id}' not found");
+            return ServiceResult.Fail("UserNotFound");
+        }
+
+        if (userDto.IsPasswordUpdated)
+        {
+            user.PasswordHash = HashUtil.HashPasswordServer(userDto.HashedPwd);
+            //Console.WriteLine("Password hashed server: " + user.PasswordHash);
+        }
+
+        user.Login = userDto.Login;
+        user.FullName = userDto.FullName;
+
+        await _db.SaveChangesAsync();
+
+        Console.WriteLine($"User '{user.Login}' updated");
+
+        // Map back to DTO to return
+        var updatedDto = new UserDto
+        {
+            Id = user.Id,
+            Login = user.Login,
+            FullName = user.FullName,
+            HashedPwd = user.PasswordHash,
+            IsPasswordUpdated = userDto.IsPasswordUpdated
+        };
+
+        ServiceResult res = ServiceResult.Ok();
+        res.user = updatedDto;
+        return res;
 
     }
 
@@ -45,7 +91,7 @@ public class UserService : IUserService
             .ToListAsync();
 
         ServiceResult res = ServiceResult.Ok();  
-        res.users = users;
+        res.allUsers = users;
         return res;
     }
 }

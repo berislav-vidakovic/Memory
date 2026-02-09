@@ -93,78 +93,36 @@ app.MapGet("/api/users", async (IUserService userService) =>
     ServiceResult result = await userService.GetAllUsersAsync();
 
     if (result.Success)
-        return Results.Ok(result.users);
+        return Results.Ok(result.allUsers);
 
      return Results.NotFound();
 });
 
-app.MapPost("/api/edituser", async (IServiceProvider services, UserDto userDto) =>
+app.MapPost("/api/edituser", async (IUserService userService, UserDto userDto) =>
 {
-    //Console.WriteLine($"Edit user attempt: {user.Login}, PwdHashedClient: {login.PwdHashed}");
+    ServiceResult result = await userService.EditAsync(userDto);
 
-    using var scope = services.CreateScope();
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    if (result.Success)
+        return Results.Ok(result.user);
 
-    // Find user by Login
-    var user = await db.Users.FirstOrDefaultAsync(u => u.Id == userDto.Id);
-
-    if (user == null)
-    {
-        Console.WriteLine($"Edit user failed: user ID '{userDto.Id}' not found");
-        return Results.NotFound("User not found");
-    }
-
-    if (userDto.IsPasswordUpdated)
-    {
-        user.PasswordHash = HashUtil.HashPasswordServer(userDto.HashedPwd);
-        //Console.WriteLine("Password hashed server: " + user.PasswordHash);
-    }      
-
-    user.Login = userDto.Login;
-    user.FullName = userDto.FullName;
-
-    await db.SaveChangesAsync();
-
-    Console.WriteLine($"User '{user.Login}' updated");
-
-    // Map back to DTO to return
-    var updatedDto = new UserDto
-    {
-        Id = user.Id,
-        Login = user.Login,
-        FullName = user.FullName,
-        HashedPwd = user.PasswordHash,
-        IsPasswordUpdated = userDto.IsPasswordUpdated
-    };
-
-    return Results.Ok(updatedDto);
+    return Results.NotFound();
 });
 
 
-app.MapPost("/api/deleteuser", async (IServiceProvider services, UserLoginDto userDto) =>
+app.MapPost("/api/deleteuser", async (IUserService userService, UserLoginDto userDto) =>
 {
-    //Console.WriteLine($"Edit user attempt: {user.Login}, PwdHashedClient: {login.PwdHashed}");
+    var result = await userService.DeleteAsync(userDto);
 
-    using var scope = services.CreateScope();
-    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    if (result.Success)
+        return Results.Ok();
 
-    // Find user by Login
-    var user = await db.Users.FirstOrDefaultAsync(u => u.Id == userDto.Id);
-
-    if (user == null)
+    switch (result.Error)
     {
-        Console.WriteLine($"Edit user failed: user ID '{userDto.Id}' not found");
-        return Results.NotFound("User not found");
-    }
-    
-
-    db.Users.Remove(user);
-    
-    await db.SaveChangesAsync();
-
-    Console.WriteLine($"User '{user.Id}' deleted");
-
-    return Results.Ok();
+        case "UserNotFound":
+            return Results.NotFound();       
+        default:
+            return Results.BadRequest("Cannot delete user that is online");
+    };
 });
 
 
