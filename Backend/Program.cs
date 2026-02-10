@@ -30,6 +30,7 @@ builder.Services.AddSignalR();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<TokenService>();
 
 builder.Services.AddCors(options =>
 {
@@ -136,22 +137,33 @@ app.MapPost("/api/deleteuser", async (IUserService userService, UserLoginDto use
 });
 
 
-app.MapPost("/api/login", async (IAuthService auth, UserLoginDto login) =>
+app.MapPost("/api/login", async (IAuthService auth, HttpResponse response, UserLoginDto login) =>
 {
     var result = await auth.LoginAsync(login);
 
-    if (result.Success)
-        return Results.Ok(result.loginUser);
+    if (!result.Success)
+        switch (result.Error)
+        {
+            case "UserNotFound":
+                return Results.NotFound();
+            case "InvalidPassword":
+                return Results.Unauthorized();
+            default:
+                return Results.BadRequest();
+        };
 
-    switch (result.Error)
+    // Set refresh token cookie
+    var refreshToken = await auth.GetRefreshTokenForUser(login.Id); // method to get latest token
+    response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
     {
-        case "UserNotFound":
-            return Results.NotFound();
-        case "InvalidPassword":
-            return Results.Unauthorized();
-        default:
-            return Results.BadRequest();
-    };
+        HttpOnly = true,
+        Secure = true,
+        SameSite = SameSiteMode.Strict,
+        Expires = DateTime.UtcNow.AddDays(7)
+    });
+
+
+    return Results.Ok(result.loginUser);
 });
 
 

@@ -6,5 +6,6 @@ namespace Backend.Services
     {
         Task<ServiceResult> LoginAsync(UserLoginDto login);
         Task<ServiceResult> LogoutAsync(UserLoginDto login);
+        Task<string> GetRefreshTokenForUser(int userId);
     }
 }

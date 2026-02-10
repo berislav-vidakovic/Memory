@@ -8,7 +8,9 @@ namespace Shared.DTOs;
 
 public class UserLoginDto
 {
-    public required string PwdHashed { get; set; }
-    public required int Id { get; set; }
+    public string PwdHashed { get; set; } = string.Empty;
+    public int Id { get; set; }
+
+    public string AccessToken { get; set; } = string.Empty;
 
 }

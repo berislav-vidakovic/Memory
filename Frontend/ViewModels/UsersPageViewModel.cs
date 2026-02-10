@@ -109,9 +109,9 @@ public class UsersPageViewModel : ComponentBase
         {
             CurrentUserId = dtoResponse.Id;
             user.IsOnline = true;
-        }
-        
 
+            Console.WriteLine("Access Token from backend: " + dtoResponse.AccessToken);
+        }
 
         CloseLoginDialog();
     }
