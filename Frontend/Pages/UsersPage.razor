@@ -193,21 +193,26 @@ else
 
         ShowUserDialog = false;
     }
+
+    // parent handling child create user after Create Submit
     private async Task HandleUserCreate(EditUser edited)
     {        
-        UserDto dtoUser = new()
+        UserDto dtoUserRequest = new()
         {
             Id = 0,
             FullName = edited.FullName,
             Login = edited.Login,
             HashedPwd = HashUtil.HashClient(edited.NewPassword)
         };
-        UserDto? dto = await UserService.CreateUserAsync(dtoUser);
-        Console.WriteLine("User created? " + dto != null);
-        if (dto != null)
+        UserDto? dtoUserResponse = await UserService.CreateUserAsync(dtoUserRequest);
+        Console.WriteLine("User created? " + dtoUserResponse != null);
+        if (dtoUserResponse != null) // in Response there is Id set on server        
         {
-            User user = new User(dto);
-            AllUsers.Add(user);
+            if (!AllUsers.Any(u => u.Id == dtoUserResponse.Id)) // might be added by SignalR notification already
+            {
+                User user = new User(dtoUserResponse);
+                AllUsers.Add(user);
+            }
         }
 
         ShowUserDialog = false;
@@ -280,13 +285,14 @@ else
 
         await LoadUsersAsync();
 
-        NotificationService.OnUserLoggedIn += HandleUserLoggedIn;
-        NotificationService.OnUserLoggedOut += HandleUserLoggedOut;
-        NotificationService.OnUserUpdated += HandleUserUpdated;
-        NotificationService.OnUserDeleted += HandleUserDeleted;
+        NotificationService.OnUserLoggedIn += OnLoggedInNotification;
+        NotificationService.OnUserLoggedOut += OnUserLoggedOutNotification;
+        NotificationService.OnUserUpdated += OnUserUpdatedNotification;
+        NotificationService.OnUserDeleted += OnUserDeletedNotification;
+        NotificationService.OnUserCreated += OnUserCreatedNotification;
     }
 
-    private void HandleUserDeleted(int userId)
+    private void OnUserDeletedNotification(int userId)
     {
         var user = AllUsers?.FirstOrDefault(u => u.Id == userId);
         if (user != null)
@@ -296,7 +302,7 @@ else
         }
     }
 
-    private void HandleUserUpdated(UserDto userDto)
+    private void OnUserUpdatedNotification(UserDto userDto)
     {
         var user = AllUsers?.FirstOrDefault(u => u.Id == userDto.Id);
         if (user != null)
@@ -308,8 +314,19 @@ else
         }
     }
 
+    private void OnUserCreatedNotification(UserDto userDto)
+    {
+        if (AllUsers.Any(u => u.Id == userDto.Id))
+            return; // added by API response already
 
-    private void HandleUserLoggedIn(int userId)
+        User user = new User(userDto);
+        AllUsers.Add(user);
+
+        InvokeAsync(StateHasChanged);
+    }
+
+
+    private void OnLoggedInNotification(int userId)
     {
         var user = AllUsers?.FirstOrDefault(u => u.Id == userId);
         if (user != null)
@@ -319,7 +336,7 @@ else
         }
     }
 
-    private void HandleUserLoggedOut(int userId)
+    private void OnUserLoggedOutNotification(int userId)
     {
         var user = AllUsers?.FirstOrDefault(u => u.Id == userId);
         if (user != null)

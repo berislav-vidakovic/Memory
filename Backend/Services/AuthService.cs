@@ -43,7 +43,10 @@ public class AuthService : IAuthService
 
         await _hub.Clients.All.SendAsync("UserLoggedIn", user.Id);
 
-        return ServiceResult.Ok();
+        ServiceResult res = ServiceResult.Ok();
+        res.loginUser = login;
+        return res;
+
     }
 
     public async Task<ServiceResult> LogoutAsync(UserLoginDto login)

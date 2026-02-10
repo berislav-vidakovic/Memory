@@ -17,7 +17,7 @@ CREATE TABLE users (
 
 CREATE TABLE refresh_tokens (
     id INT IDENTITY(1,1) PRIMARY KEY,
-    user_id INT NOT NULL UNIQUE,
+    user_id INT NOT NULL,
     token VARCHAR(255) NOT NULL,
     expires_at DATETIME2 NOT NULL,
     CONSTRAINT fk_user FOREIGN KEY (user_id)

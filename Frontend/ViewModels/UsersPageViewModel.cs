@@ -104,15 +104,14 @@ public class UsersPageViewModel : ComponentBase
             PwdHashed = HashedPwd
         };
 
-        bool bSuccess = await UserService.LoginAsync(loginBody);
-        if (bSuccess)
+        UserLoginDto? dtoResponse= await UserService.LoginAsync(loginBody);
+        if (dtoResponse != null)
         {
-            CurrentUserId = user.Id;
+            CurrentUserId = dtoResponse.Id;
             user.IsOnline = true;
         }
         
 
-        Console.WriteLine($"Login result: {bSuccess}");
 
         CloseLoginDialog();
     }

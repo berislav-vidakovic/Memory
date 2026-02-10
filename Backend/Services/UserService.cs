@@ -109,7 +109,7 @@ public class UserService : IUserService
             HashedPwd = user.PasswordHash,
         };
 
-        //await _hub.Clients.All.SendAsync("UserUpdated", updatedDto);
+        await _hub.Clients.All.SendAsync("UserCreated", updatedDto);
 
         ServiceResult res = ServiceResult.Ok();
         res.user = updatedDto;

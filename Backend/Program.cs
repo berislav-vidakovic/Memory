@@ -141,7 +141,7 @@ app.MapPost("/api/login", async (IAuthService auth, UserLoginDto login) =>
     var result = await auth.LoginAsync(login);
 
     if (result.Success)
-        return Results.Ok();
+        return Results.Ok(result.loginUser);
 
     switch (result.Error)
     {

@@ -11,6 +11,7 @@ public class NotificationService
     public event Action<int>? OnUserLoggedOut;
     public event Action<UserDto>? OnUserUpdated;
     public event Action<int>? OnUserDeleted;
+    public event Action<UserDto>? OnUserCreated;
 
 
     public async Task StartAsync()
@@ -44,6 +45,12 @@ public class NotificationService
         {
             Console.WriteLine($"SignalR: User deleted: {userId}");
             OnUserDeleted?.Invoke(userId);
+        });
+
+        _connection.On<UserDto>("UserCreated", userId =>
+        {
+            Console.WriteLine($"SignalR: User created: {userId}");
+            OnUserCreated?.Invoke(userId);
         });
 
         await _connection.StartAsync();
