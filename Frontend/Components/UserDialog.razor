@@ -14,7 +14,7 @@
             <div class="modal-content">
 
                 <div class="modal-header">
-                    <h5 class="modal-title">Edit User</h5>
+                    <h5 class="modal-title">@(NewUser ? "Create New User" : "Edit User")</h5>
                     <button class="btn-close" @onclick="Cancel"></button>
                 </div>                
 
@@ -30,15 +30,18 @@
                            type="text"
                            @bind="LocalUser.FullName" />
 
-                    <div class="form-check mt-3">
-                        <input class="form-check-input"
-                               type="checkbox"
-                               id="updatePasswordCheck"
-                               @bind="UpdatePassword" />
-                        <label class="form-check-label" for="updatePasswordCheck">
-                            Update password
-                        </label>
-                    </div>
+                    @if (!@NewUser)
+                    {
+                        <div class="form-check mt-3">
+                            <input class="form-check-input"
+                            type="checkbox"
+                            id="updatePasswordCheck"
+                            @bind="UpdatePassword" />
+                            <label class="form-check-label" for="updatePasswordCheck">
+                                Update password
+                            </label>
+                        </div>
+                    }
 
                     @if (@UpdatePassword)
                     {
@@ -56,8 +59,9 @@
                                 <i class="bi @(showPassword[PwdField.Current] ? "bi-eye-slash" : "bi-eye")"></i>
                             </button>
                         </div>
-
-
+                    }
+                    @if (@UpdatePassword || NewUser )
+                    {
                         <label class="mt-2">New Password</label>
                         <div class="input-group">
                             <input class="form-control"
@@ -90,7 +94,10 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button class="btn btn-danger" @onclick="Delete">Delete user</button>
+                    @if (!@NewUser)
+                    {
+                        <button class="btn btn-danger" @onclick="Delete">Delete user</button>
+                    }                    
                     <button class="btn btn-primary" @onclick="Submit">Submit</button>
                 </div>
 
@@ -106,12 +113,15 @@
 
 
 @code {
-    [Parameter] public bool UpdatePassword { get; set; } = false;
-    [Parameter] public EventCallback<EditUser> OnSubmit { get; set; }
-    [Parameter] public EventCallback<EditUser> OnDelete { get; set; }
-    [Parameter] public EventCallback OnCancel { get; set; }
+        [Parameter] public bool UpdatePassword { get; set; } = false;
+        [Parameter] public bool NewUser { get; set; } = false;
+        [Parameter] public EventCallback<EditUser> OnSubmit { get; set; }
+        [Parameter] public EventCallback<EditUser> OnDelete { get; set; }
+        [Parameter] public EventCallback OnCancel { get; set; }
 
     private EditUser LocalUser = new();
+
+
 
     private bool ShowInfoDialog { get; set; }
 
@@ -129,19 +139,19 @@
     protected override void OnParametersSet()
     {
         Console.WriteLine("Called OnParametersSet - clone user");
-        if (SelectedUser == null)
-            return;
+        if (SelectedUser != null)
+            LocalUser = new EditUser
+                {
+                    Id = SelectedUser.Id,
+                    Login = SelectedUser.Login,
+                    FullName = SelectedUser.FullName
+                };
+        else
+            LocalUser = new();
 
-        // COPY values (no live reference)
-        LocalUser = new EditUser
-        {
-            Id = SelectedUser.Id,
-            Login = SelectedUser.Login,
-            FullName = SelectedUser.FullName
-        };
 
-        Console.WriteLine( "Clone no good:" + 
-            Object.ReferenceEquals(SelectedUser, LocalUser) );
+        //Console.WriteLine( "Clone no good:" + 
+        //  Object.ReferenceEquals(SelectedUser, LocalUser) );
     }
 
     public async Task Cancel()
@@ -161,11 +171,16 @@
             return false;
         }
 
-        if (!UpdatePassword)
+        return ValidatePasswords();
+    }
+
+    private bool ValidatePasswords()
+    {
+        if (!UpdatePassword && !NewUser)
             return true;
 
-        if( string.IsNullOrEmpty(LocalUser.CurrentPassword ) || 
-            string.IsNullOrEmpty(LocalUser.NewPassword) ||
+
+        if( string.IsNullOrEmpty(LocalUser.NewPassword) ||
             string.IsNullOrEmpty(LocalUser.ConfirmPassword) )
         {
             RaiseInfoDlg("Password field Error", "No Password field can be empty!");
@@ -178,6 +193,11 @@
             return false;
         }
 
+        if( !NewUser && string.IsNullOrEmpty(LocalUser.CurrentPassword ) )
+        {
+            RaiseInfoDlg("Password field Error", "No Password field can be empty!");
+            return false;
+        }
 
         return true;
     }

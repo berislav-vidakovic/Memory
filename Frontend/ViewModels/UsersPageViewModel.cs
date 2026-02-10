@@ -24,7 +24,7 @@ public class UsersPageViewModel : ComponentBase
     public List<User> AllUsers { get; private set; } = new();
 
     public bool ShowLoginDialog { get; private set; }
-    public bool ShowPwdDialog { get; set; }
+    public bool ShowUserDialog { get; set; }
 
 
     public int? SelectedId { get; set; }
@@ -61,13 +61,13 @@ public class UsersPageViewModel : ComponentBase
 
     public void OpenPwdDialog()
     {
-        ShowPwdDialog = true;
+        ShowUserDialog = true;
         OnStateChanged?.Invoke();
     }
 
     public void ClosePwdDialog()
     {
-        ShowPwdDialog = false;
+        ShowUserDialog = false;
         OnStateChanged?.Invoke();
     }
 

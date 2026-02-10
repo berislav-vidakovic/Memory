@@ -82,16 +82,19 @@ else
              OnConfirm="HandleLoginConfirm"
              OnCancel="LoginCancel"/>
 
-@if (EditUserId != null)
+@if (EditUserId != null || CreateNewUser )
 {
-    <UserDialog SelectedUser="@AllUsers!.FirstOrDefault(u => u.Id == EditUserId)"
-                ShowEditUserDialog="@ShowPwdDialog"    
-                OnSubmit="HandleUserUpdate"
+    <UserDialog SelectedUser="@(CreateNewUser ? null : AllUsers!.FirstOrDefault(u => u.Id == EditUserId))" 
+                ShowEditUserDialog="@ShowUserDialog"    
+                OnSubmit="@(CreateNewUser? HandleUserCreate : HandleUserUpdate)"
                 OnCancel="CloseDialog" 
                 OnDelete="DeleteUser" 
+                NewUser="@CreateNewUser"
                 UpdatePassword="false"/>
-
 }
+
+
+
 
 @if (ShowContextMenu)
 {
@@ -134,6 +137,7 @@ else
     private double ContextMenuX;
     private double ContextMenuY;
     private int ContextMenuUserId;
+    private bool CreateNewUser = false;
 
     private void CloseDockedEditor()
     {
@@ -187,8 +191,28 @@ else
 
         }
 
-        ShowPwdDialog = false;
+        ShowUserDialog = false;
     }
+    private async Task HandleUserCreate(EditUser edited)
+    {        
+        UserDto dtoUser = new()
+        {
+            Id = 0,
+            FullName = edited.FullName,
+            Login = edited.Login,
+            HashedPwd = HashUtil.HashClient(edited.NewPassword)
+        };
+        UserDto? dto = await UserService.CreateUserAsync(dtoUser);
+        Console.WriteLine("User created? " + dto != null);
+        if (dto != null)
+        {
+            User user = new User(dto);
+            AllUsers.Add(user);
+        }
+
+        ShowUserDialog = false;
+    }
+
 
     private async Task HandleUserUpdate(EditUser edited)
     {
@@ -209,7 +233,7 @@ else
             if (!valid)
             {
                 Console.WriteLine(" *** Invalid password");
-                ShowPwdDialog = false;
+                ShowUserDialog = false;
 
                 return;
             }
@@ -235,12 +259,13 @@ else
                 user.HashedPwd = dto.HashedPwd;
         }
 
-        ShowPwdDialog = false;
+        ShowUserDialog = false;
     }
 
     private void CloseDialog()
     {
-        ShowPwdDialog = false;
+        ShowUserDialog = false;
+        CreateNewUser = false;
     }
 
 
@@ -304,14 +329,14 @@ else
         }
     }
 
-    
+
 
 
     private async Task EditUser(int? userId)
     {
         Console.WriteLine("EditUser clicked userId=" +userId);
         EditUserId = userId;
-        ShowPwdDialog = true;
+        ShowUserDialog = true;
         StateHasChanged();
     }
 
@@ -321,6 +346,8 @@ else
     private async Task Register()
     {
         Console.WriteLine("Register clicked");
+        CreateNewUser = true;
+        ShowUserDialog = true;
         StateHasChanged();
     }
 

@@ -6,6 +6,9 @@ namespace Backend.Services
     {
         Task<ServiceResult> DeleteAsync(UserLoginDto login);
         Task<ServiceResult> EditAsync(UserDto login);
+        Task<ServiceResult> CreateAsync(UserDto login);
+
+        
 
         Task <ServiceResult> GetAllUsersAsync();
     }

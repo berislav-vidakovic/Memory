@@ -27,6 +27,25 @@ public class UserApiService
 
         return new List<User>();
     }
+    
+
+    public async Task<UserDto?> CreateUserAsync(UserDto dto)
+    {
+        // Send POST to /api/edituser
+        var response = await _http.PostAsJsonAsync("https://localhost:5206/api/createuser", dto);
+
+        if (response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Create user successful!");
+            var newUser = await response.Content.ReadFromJsonAsync<UserDto>();
+            return newUser;
+        }
+        else
+        {
+            Console.WriteLine($"Create user failed: {response.StatusCode}");
+            return null;
+        }
+    }
 
     public async Task<UserDto?> EditUserAsync(UserDto dto)
     {

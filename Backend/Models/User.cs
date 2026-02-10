@@ -22,7 +22,7 @@ namespace Backend.Models
 
         [Column("full_name")]
         [MaxLength(255)]
-        public required string FullName { get; set; }
+        public string FullName { get; set; } = string.Empty;
 
         [Column("isonline")]
         public bool IsOnline { get; set; } = false;

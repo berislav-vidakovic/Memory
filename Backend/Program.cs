@@ -108,6 +108,16 @@ app.MapPost("/api/edituser", async (IUserService userService, UserDto userDto) =
     return Results.NotFound();
 });
 
+app.MapPost("/api/createuser", async (IUserService userService, UserDto userDto) =>
+{
+    ServiceResult result = await userService.CreateAsync(userDto);
+
+    if (result.Success)
+        return Results.Ok(result.user);
+
+    return Results.NotFound();
+});
+
 
 app.MapPost("/api/deleteuser", async (IUserService userService, UserLoginDto userDto) =>
 {
