@@ -68,7 +68,7 @@ public class UserApiService
     public async Task<UserLoginDto?> LoginAsync(UserLoginDto login)
     {
         // Send POST to /api/login
-        var response = await _http.PostAsJsonAsync("https://localhost:5206/api/login", login);
+        var response = await _http.PostAsJsonAsync("/api/login", login);
 
         if (response.IsSuccessStatusCode)
         {

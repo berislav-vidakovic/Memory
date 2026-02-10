@@ -21,6 +21,10 @@ public class UsersPageViewModel : ComponentBase
     [Inject]
     public UserApiService UserService { get; set; } = default!;
 
+    [Inject]
+    public AuthService AuthService { get; set; } = default!;
+
+
     public List<User> AllUsers { get; private set; } = new();
 
     public bool ShowLoginDialog { get; private set; }
@@ -38,7 +42,12 @@ public class UsersPageViewModel : ComponentBase
 
     public async Task LoadUsersAsync()
     {
-        AllUsers = await UserService.GetUsersAsync();    
+        AllUsers = await UserService.GetUsersAsync();
+
+        int? userId = AuthService.GetCurrentUserId();
+        if (userId != null)
+            CurrentUserId = userId;
+
         OnStateChanged?.Invoke();
     }
 
@@ -111,6 +120,7 @@ public class UsersPageViewModel : ComponentBase
             user.IsOnline = true;
 
             Console.WriteLine("Access Token from backend: " + dtoResponse.AccessToken);
+            AuthService.SetAccessToken(dtoResponse.AccessToken);
         }
 
         CloseLoginDialog();
@@ -145,6 +155,7 @@ public class UsersPageViewModel : ComponentBase
         {
             CurrentUserId = null;
             user.IsOnline = false;
+            AuthService.ClearAccessToken();
         }
 
         OnStateChanged?.Invoke();

@@ -13,6 +13,8 @@ namespace Backend.Services
         public List<UserDto>? allUsers = null;
         public UserDto? user = null;
         public UserLoginDto? loginUser = null;
+        public string refreshToken = string.Empty;
+        public DateTime tokenExpiration;
     }
 
 }

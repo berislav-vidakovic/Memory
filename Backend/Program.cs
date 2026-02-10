@@ -38,7 +38,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins("https://localhost:7173")
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .AllowCredentials(); // mandatory for cookies
     });
 });
    
@@ -136,6 +137,35 @@ app.MapPost("/api/deleteuser", async (IUserService userService, UserLoginDto use
     };
 });
 
+app.MapPost("/api/refreshcheck", async (IAuthService auth, HttpRequest request, HttpResponse response) =>
+{
+    // Read refresh token from HttpOnly cookie
+    string? refreshToken = request.Cookies["refreshToken"];
+
+    ServiceResult result = await auth.RefreshCheck(refreshToken);
+
+    if (!result.Success)
+        switch (result.Error)
+        {
+            case "InvalidRefreshToken":
+                return Results.Unauthorized();
+            default:
+                return Results.BadRequest();
+        };
+      
+
+    // Update HttpOnly cookie
+    response.Cookies.Append("refreshToken", result.refreshToken, new CookieOptions
+    {
+        HttpOnly = true,
+        Secure = false,
+        SameSite = SameSiteMode.None,
+        Expires = result.tokenExpiration
+    });
+
+    return Results.Ok(result.loginUser);
+
+});
 
 app.MapPost("/api/login", async (IAuthService auth, HttpResponse response, UserLoginDto login) =>
 {
@@ -157,11 +187,10 @@ app.MapPost("/api/login", async (IAuthService auth, HttpResponse response, UserL
     response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
     {
         HttpOnly = true,
-        Secure = true,
-        SameSite = SameSiteMode.Strict,
+        Secure = false,
+        SameSite = SameSiteMode.None,
         Expires = DateTime.UtcNow.AddDays(7)
     });
-
 
     return Results.Ok(result.loginUser);
 });

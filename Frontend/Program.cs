@@ -8,7 +8,9 @@ builder.RootComponents.Add<App>("#app");
 builder.RootComponents.Add<HeadOutlet>("head::after");
 
 // Add HttpClient
-builder.Services.AddScoped(sp => new HttpClient());
+builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:5206") });
+
+
 //builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
 
@@ -19,6 +21,14 @@ builder.Services.AddScoped<UserApiService>();
 builder.Services.AddSingleton<ChatSignalRService>();
 builder.Services.AddSingleton<NotificationService>();
 
+builder.Services.AddSingleton<AuthService>();
 
 
-await builder.Build().RunAsync();
+var host = builder.Build();
+
+//var auth = host.Services.GetRequiredService<AuthService>();
+//var http = host.Services.GetRequiredService<HttpClient>();
+
+//await auth.RestoreSessionAsync(http);
+
+await host.RunAsync();

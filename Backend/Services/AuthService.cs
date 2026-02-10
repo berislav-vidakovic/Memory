@@ -1,4 +1,5 @@
-﻿using Backend.Data;
+﻿using Azure.Core;
+using Backend.Data;
 using Backend.Hubs;
 using Backend.Models;
 using Microsoft.AspNetCore.SignalR;
@@ -21,6 +22,50 @@ public class AuthService : IAuthService
         _db = db;
         _hub = hub;
         _tokenService = tokenService;
+    }
+
+    public async Task<ServiceResult> RefreshCheck(string? refreshToken)
+    {
+        if (string.IsNullOrEmpty(refreshToken))
+            return ServiceResult.Fail("InvalidRefreshToken");
+
+        // Find token in DB
+        var tokenRecord = await _db.RefreshTokens
+            .FirstOrDefaultAsync(t => t.Token == refreshToken);
+
+        if (tokenRecord == null)
+            return ServiceResult.Fail("InvalidRefreshToken");
+
+        // Check expiration
+        if (tokenRecord.ExpiresAt < DateTime.UtcNow)
+            return ServiceResult.Fail("InvalidRefreshToken");
+
+        User? user = await _db.Users.FirstOrDefaultAsync(u => u.Id == tokenRecord.UserId);
+        if (user == null)
+            return ServiceResult.Fail("InvalidRefreshToken");
+
+        UserLoginDto login = new();
+        login.Id = user.Id;
+        login.PwdHashed = user.PasswordHash;
+
+        // Generate new access token
+        var newAccessToken = _tokenService.GenerateAccessToken(tokenRecord.UserId);
+        login.AccessToken = newAccessToken;
+
+        // Rotate refresh token
+        var newRefreshToken = _tokenService.GenerateRefreshToken();
+
+        tokenRecord.Token = newRefreshToken;
+        tokenRecord.ExpiresAt = DateTime.UtcNow.AddDays(7);
+
+        await _db.SaveChangesAsync();
+
+        ServiceResult res = ServiceResult.Ok();
+        res.loginUser = login;       
+        res.refreshToken = newRefreshToken;
+        res.tokenExpiration = tokenRecord.ExpiresAt;
+        return res;
+
     }
 
     public async Task<ServiceResult> LoginAsync(UserLoginDto login)

@@ -1,6 +1,8 @@
 ﻿@using Frontend.Services
 @inherits LayoutComponentBase
 @inject NotificationService NotificationService
+@inject AuthService AuthService
+@inject HttpClient Http
 
 <div class="page">
     <div class="sidebar">
@@ -22,5 +24,10 @@
     protected override async Task OnInitializedAsync()
     {
         await NotificationService.StartAsync();
+        Console.WriteLine("App starting — restoring session...");
+        await AuthService.RestoreSessionAsync(Http);
     }
+   
+}
+
 }
