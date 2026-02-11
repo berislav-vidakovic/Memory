@@ -93,6 +93,11 @@ public class UsersPageViewModel : ComponentBase
 
     public async Task LoginOk()
     {
+        await UserService.LoginRefreshAsync();
+        CloseLoginDialog();
+        Console.WriteLine("Login done");
+        return;
+
         Console.WriteLine("Login attempt login=" + SelectedId + " pwd=" + Password);
         User? user = AllUsers.FirstOrDefault(u => u.Id == SelectedId);
 

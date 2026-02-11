@@ -1,4 +1,5 @@
 ﻿using Frontend.Models;
+using Microsoft.JSInterop;
 using Shared.DTOs;
 using System.Collections.Generic;
 using System.Net.Http.Json;
@@ -8,10 +9,12 @@ namespace Frontend.Services;
 public class UserApiService
 {
     private readonly HttpClient _http;
+    private readonly IJSRuntime _js;
 
-    public UserApiService(HttpClient http)
+    public UserApiService(HttpClient http, IJSRuntime js)
     {
         _http = http;
+        _js = js; 
     }
 
     public async Task<List<User>> GetUsersAsync()
@@ -64,6 +67,12 @@ public class UserApiService
             return null;
         }
     }
+
+    public async Task LoginRefreshAsync()
+    {
+        await _js.InvokeVoidAsync("sendRequestPOST", "https://localhost:5206/api/loginrefresh", null);
+    }
+
 
     public async Task<UserLoginDto?> LoginAsync(UserLoginDto login)
     {
