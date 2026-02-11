@@ -200,7 +200,7 @@ app.MapPost("/api/login", async (IAuthService auth, HttpResponse response, UserL
 
     // Set refresh token cookie
     var refreshToken = await auth.GetRefreshTokenForUser(login.Id); // method to get latest token
-    response.Cookies.Append("refreshToken", refreshToken, new CookieOptions
+    response.Cookies.Append("X-Refresh-Token", refreshToken, new CookieOptions
     {
         HttpOnly = true,
         Secure = false,

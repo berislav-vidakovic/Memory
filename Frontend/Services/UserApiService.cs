@@ -76,21 +76,24 @@ public class UserApiService
 
     public async Task<UserLoginDto?> LoginAsync(UserLoginDto login)
     {
-        // Send POST to /api/login
-        var response = await _http.PostAsJsonAsync("/api/login", login);
-
-        if (response.IsSuccessStatusCode)
+        try
         {
+            var dto = await _js.InvokeAsync<UserLoginDto>(
+                "sendRequestPOST",
+                "https://localhost:5206/api/login",
+                login
+            );
+
             Console.WriteLine("Login successful!");
-            UserLoginDto? dto= await response.Content.ReadFromJsonAsync<UserLoginDto>();
             return dto;
         }
-        else
+        catch (Exception ex)
         {
-            Console.WriteLine($"Login failed: {response.StatusCode}");
+            Console.WriteLine($"Login failed: {ex.Message}");
             return null;
         }
     }
+
 
     public async Task<bool> DeleteAsync(UserLoginDto login)
     {
