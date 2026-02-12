@@ -203,7 +203,7 @@ app.MapPost("/api/login", async (IAuthService auth, HttpResponse response, UserL
     response.Cookies.Append("X-Refresh-Token", refreshToken, new CookieOptions
     {
         HttpOnly = true,
-        Secure = false,
+        Secure = true, // SameSite=None, Secure=true is mandatory
         SameSite = SameSiteMode.None,
         Expires = DateTime.UtcNow.AddDays(7)
     });
