@@ -1,3 +1,4 @@
+using Azure;
 using Backend.Data;
 using Backend.Hubs;
 using Backend.Services;
@@ -199,12 +200,21 @@ app.MapPost("/api/login", async (IAuthService auth, HttpResponse response, UserL
 });
 
 
-app.MapPost("/api/logout", async (IAuthService auth, UserLoginDto login) =>
+app.MapPost("/api/logout", async (IAuthService auth, HttpResponse response, UserLoginDto login) =>
 {
     var result = await auth.LogoutAsync(login);
 
     if (result.Success)
-        return Results.Ok();
+    {
+        response.Cookies.Append("X-Refresh-Token", "", new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true,
+            SameSite = SameSiteMode.None,
+            Expires = DateTime.UtcNow.AddDays(-1) // Expire in the past
+        });
+        return Results.Ok(login);
+    }
 
     switch (result.Error)
     {

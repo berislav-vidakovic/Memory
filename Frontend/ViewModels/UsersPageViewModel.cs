@@ -162,8 +162,8 @@ public class UsersPageViewModel : ViewModelBase
             PwdHashed = ""
         };
 
-        bool bSuccess = await UserService.LogoutAsync(logoutBody);
-        if (bSuccess)
+        UserLoginDto? dto = await AuthService.LogoutAsync(logoutBody);
+        if (dto != null)
         {
             AppState.SetCurrentUser( null);
             user.IsOnline = false;

@@ -87,20 +87,5 @@ public class UserApiService
         }
     }
 
-    public async Task<bool> LogoutAsync(UserLoginDto login)
-    {
-        // Send POST to /api/logout
-        var response = await _http.PostAsJsonAsync("https://localhost:5206/api/logout", login);
-
-        if (response.IsSuccessStatusCode)
-        {
-            Console.WriteLine("Logout successful!");
-            return true;
-        }
-        else
-        {
-            Console.WriteLine($"Logout failed: {response.StatusCode}");
-            return false;
-        }
-    }
+   
 }
