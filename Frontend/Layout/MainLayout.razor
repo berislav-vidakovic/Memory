@@ -3,6 +3,9 @@
 @inject NotificationService NotificationService
 @inject AuthService AuthService
 @inject HttpClient Http
+@inject AppState AppState
+@inject UserApiService UserService
+
 
 <div class="page">
     <div class="sidebar">
@@ -23,9 +26,17 @@
 @code {
     protected override async Task OnInitializedAsync()
     {
+        Console.WriteLine("App is starting ... ");
+
         await NotificationService.StartAsync();
-        Console.WriteLine("App starting — restoring session...");
-        await AuthService.RestoreSessionAsync(Http);
+        //await AuthService.RestoreSessionAsync(Http);
+        if (!AppState.Users.Any())
+        {
+            var users = await UserService.GetUsersAsync();
+            AppState.SetUsers(users);
+        }
+
+
     }
    
 }

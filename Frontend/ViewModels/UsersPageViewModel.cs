@@ -46,8 +46,8 @@ public class UsersPageViewModel : ViewModelBase
 
     public async Task LoadUsersAsync()
     {
-        var users = await UserService.GetUsersAsync();
-        AppState.SetUsers(users);
+        //var users = await UserService.GetUsersAsync();
+        //AppState.SetUsers(users);
 
         int? userId = AuthService.GetCurrentUserId();
         if (userId != null)
