@@ -63,7 +63,7 @@ else
             @foreach (var user in AllUsers)
             {
                 <tr
-                    @ondblclick="() => EditUser(user.Id)"
+                    @ondblclick="() => EditUserForm(user.Id)"
                     @oncontextmenu="(e) => OnRowRightClick(e, user.Id)"
                     @oncontextmenu:preventDefault="true">
                     <td>@user.FullName</td>
@@ -284,7 +284,6 @@ else
             InvokeAsync(StateHasChanged);
         };
 
-        await LoadUsersAsync();
 
         NotificationService.OnUserLoggedIn += OnLoggedInNotification;
         NotificationService.OnUserLoggedOut += OnUserLoggedOutNotification;

@@ -28,10 +28,6 @@ public class UsersPageViewModel : ViewModelBase
     public List<User> AllUsers => AppState.Users;
     public int? CurrentUserId => AppState.CurrentUserId;
 
-    //public int? CurrentUserId { get; set; } = null;
-
-    //public List<User> AllUsers { get; private set; } = new();
-
 
     public bool ShowLoginDialog { get; private set; }
     public bool ShowUserDialog { get; set; }
@@ -42,23 +38,18 @@ public class UsersPageViewModel : ViewModelBase
     public string Password { get; set; } = string.Empty;
 
 
-    public event Action? OnStateChanged;
-    
-
-    public async Task LoadUsersAsync()
-    {
-        //var users = await UserService.GetUsersAsync();
-        //AppState.SetUsers(users);
-
-        //int? userId = AuthService.GetCurrentUserId();
-        //if (userId != null)
-          //  CurrentUserId = userId;
-
-        OnStateChanged?.Invoke();
-    }
+    public event Action? OnStateChanged;    
+     
 
     public List<User> OfflineUsers =>
         AllUsers.Where(u => !u.IsOnline).ToList();
+
+
+    protected override void OnAppStateChanged()
+    {
+        OnStateChanged?.Invoke();
+    }
+
 
     public void OpenLoginDialog()
     {
