@@ -16,7 +16,7 @@ MVVM Architecture
 -UI just renders whatever ViewModel exposes
 */
 
-public class UsersPageViewModel : ComponentBase
+public class UsersPageViewModel : ViewModelBase
 {
     [Inject]
     public UserApiService UserService { get; set; } = default!;
@@ -25,7 +25,11 @@ public class UsersPageViewModel : ComponentBase
     public AuthService AuthService { get; set; } = default!;
 
 
-    public List<User> AllUsers { get; private set; } = new();
+    public List<User> AllUsers => AppState.Users;
+
+
+    //public List<User> AllUsers { get; private set; } = new();
+
 
     public bool ShowLoginDialog { get; private set; }
     public bool ShowUserDialog { get; set; }
@@ -42,7 +46,8 @@ public class UsersPageViewModel : ComponentBase
 
     public async Task LoadUsersAsync()
     {
-        AllUsers = await UserService.GetUsersAsync();
+        var users = await UserService.GetUsersAsync();
+        AppState.SetUsers(users);
 
         int? userId = AuthService.GetCurrentUserId();
         if (userId != null)

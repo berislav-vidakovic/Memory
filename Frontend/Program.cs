@@ -25,6 +25,8 @@ builder.Services.AddScoped<JsCookiesService>();
 
 builder.Services.AddScoped<AuthService>();
 
+builder.Services.AddScoped<AppState>();
+
 var host = builder.Build();
 
 //var auth = host.Services.GetRequiredService<AuthService>();

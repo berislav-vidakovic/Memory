@@ -43,14 +43,7 @@ public class UserViewModel : ComponentBase
 
 
 
-    /*
-    private bool ValidateCurrentPassword()
-    {
-
-        string currPwd = HashUtil.HashClient(CurrentPassword);
-        bool result = HashUtil.VerifyPasswordServer(currPwd, ExistingPassword);
-        return result;
-    }*/
+   
 
     
 
