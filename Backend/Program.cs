@@ -1,7 +1,9 @@
 using Azure;
 using Backend.Data;
 using Backend.Hubs;
+using Backend.Models;
 using Backend.Services;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Shared;
@@ -149,20 +151,15 @@ app.MapPost("/api/refreshcheck", async (IAuthService auth, HttpRequest request, 
         switch (result.Error)
         {
             case "InvalidRefreshToken":
-                return Results.Unauthorized();
+                return Results.Unauthorized();            
+            case "UserOffline":
+                return Results.Conflict();
             default:
                 return Results.BadRequest();
-        };
-      
+        };      
 
     // Update HttpOnly cookie
-    response.Cookies.Append("X-Refresh-Token", result.refreshToken, new CookieOptions
-    {
-        HttpOnly = true,
-        Secure = true, // SameSite=None, Secure=true is mandatory
-        SameSite = SameSiteMode.None,
-        Expires = DateTime.UtcNow.AddDays(7)
-    });
+    auth.AppendCookie(response, "X-Refresh-Token", result.refreshToken, DateTime.UtcNow.AddDays(7));
 
     return Results.Ok(result.loginUser);
 
@@ -188,13 +185,7 @@ app.MapPost("/api/login", async (IAuthService auth, HttpResponse response, UserL
 
     // Set refresh token cookie
     var refreshToken = await auth.GetRefreshTokenForUser(login.Id); // method to get latest token
-    response.Cookies.Append("X-Refresh-Token", refreshToken, new CookieOptions
-    {
-        HttpOnly = true,
-        Secure = true, // SameSite=None, Secure=true is mandatory
-        SameSite = SameSiteMode.None,
-        Expires = DateTime.UtcNow.AddDays(7)
-    });
+    auth.AppendCookie(response, "X-Refresh-Token", refreshToken, DateTime.UtcNow.AddDays(7));
 
     return Results.Ok(result.loginUser);
 });
@@ -206,13 +197,7 @@ app.MapPost("/api/logout", async (IAuthService auth, HttpResponse response, User
 
     if (result.Success)
     {
-        response.Cookies.Append("X-Refresh-Token", "", new CookieOptions
-        {
-            HttpOnly = true,
-            Secure = true,
-            SameSite = SameSiteMode.None,
-            Expires = DateTime.UtcNow.AddDays(-1) // Expire in the past
-        });
+        auth.AppendCookie(response, "X-Refresh-Token", "", DateTime.UtcNow.AddDays(-1));
         return Results.Ok(login);
     }
 

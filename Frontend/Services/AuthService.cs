@@ -21,14 +21,14 @@ namespace Frontend.Services
         public string? AccessToken => _accessToken;
 
         // Set or update the access token
-        public void SetAccessToken(string token)
+        private void SetAccessToken(string token)
         {
             _accessToken = token;
         }
 
 
         // Clear token on logout
-        public void ClearAccessToken()
+        private void ClearAccessToken()
         {
             _accessToken = null;
         }
@@ -62,13 +62,19 @@ namespace Frontend.Services
         {
             try
             {
-                var dto = await _jsCookiesService.PostAsync<UserLoginDto>(
+                var dtoResponse = await _jsCookiesService.PostAsync<UserLoginDto>(
                         "https://localhost:5206/api/login",
                         login
                     );
+                if (dtoResponse != null)
+                {
+                    Console.WriteLine("Login successful!");
+                    Console.WriteLine("Access Token from backend: " + dtoResponse.AccessToken);
+                    SetAccessToken(dtoResponse.AccessToken);
+                }
 
-                Console.WriteLine("Login successful!");
-                return dto;
+
+                return dtoResponse;
             }
             catch (Exception ex)
             {

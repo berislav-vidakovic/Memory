@@ -98,11 +98,7 @@ public class UsersPageViewModel : ViewModelBase
     }
 
     public async Task LoginOk()
-    {/*
-        await UserService.LoginRefreshAsync();
-        CloseLoginDialog();
-        Console.WriteLine("Login done");
-        return; */
+    {
 
         Console.WriteLine("Login attempt login=" + SelectedId + " pwd=" + Password);
         User? user = AllUsers.FirstOrDefault(u => u.Id == SelectedId);
@@ -124,15 +120,12 @@ public class UsersPageViewModel : ViewModelBase
             PwdHashed = HashedPwd
         };
 
-        //UserLoginDto? dtoResponse= await UserService.LoginAsync(loginBody);
         UserLoginDto? dtoResponse= await AuthService.LoginAsync(loginBody);
         if (dtoResponse != null)
         {
             AppState.SetCurrentUser(dtoResponse.Id);
             user.IsOnline = true;
 
-            Console.WriteLine("Access Token from backend: " + dtoResponse.AccessToken);
-            AuthService.SetAccessToken(dtoResponse.AccessToken);
         }
 
         CloseLoginDialog();
@@ -167,7 +160,6 @@ public class UsersPageViewModel : ViewModelBase
         {
             AppState.SetCurrentUser( null);
             user.IsOnline = false;
-            AuthService.ClearAccessToken();
         }
 
         OnStateChanged?.Invoke();

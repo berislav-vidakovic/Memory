@@ -8,6 +8,8 @@ namespace Backend.Services
         Task<ServiceResult> LogoutAsync(UserLoginDto login);
         Task<string> GetRefreshTokenForUser(int userId);
         Task<ServiceResult> RefreshCheck(string? refreshToken);
+        void AppendCookie(HttpResponse response, string key, string value, DateTimeOffset expires);
+
 
     }
 }

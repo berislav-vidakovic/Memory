@@ -4,6 +4,7 @@ using Backend.Hubs;
 using Backend.Models;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Shared;
 using Shared.DTOs;
 
@@ -24,6 +25,17 @@ public class AuthService : IAuthService
         _tokenService = tokenService;
     }
 
+    public void AppendCookie(HttpResponse response, string key, string value, DateTimeOffset expires)
+    { 
+        response.Cookies.Append(key, value, new CookieOptions
+        {
+            HttpOnly = true,
+            Secure = true, // SameSite=None, Secure=true is mandatory
+            SameSite = SameSiteMode.None,
+            Expires = expires
+        });
+    }
+
     public async Task<ServiceResult> RefreshCheck(string? refreshToken)
     {
         if (string.IsNullOrEmpty(refreshToken))
@@ -42,7 +54,9 @@ public class AuthService : IAuthService
 
         User? user = await _db.Users.FirstOrDefaultAsync(u => u.Id == tokenRecord.UserId);
         if (user == null)
-            return ServiceResult.Fail("InvalidRefreshToken");
+            return ServiceResult.Fail("InvalidUser");
+        if( !user.IsOnline )
+            return ServiceResult.Fail("UserOffline");
 
         UserLoginDto login = new();
         login.Id = user.Id;
