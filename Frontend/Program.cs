@@ -21,8 +21,9 @@ builder.Services.AddScoped<UserApiService>();
 builder.Services.AddSingleton<ChatSignalRService>();
 builder.Services.AddSingleton<NotificationService>();
 
-builder.Services.AddSingleton<AuthService>();
+builder.Services.AddScoped<JsCookiesService>();
 
+builder.Services.AddScoped<AuthService>();
 
 var host = builder.Build();
 

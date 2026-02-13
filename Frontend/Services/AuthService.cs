@@ -10,6 +10,13 @@ namespace Frontend.Services
         private string? _accessToken;
         private int? _currentUserId;
 
+        private readonly JsCookiesService _jsCookiesService;
+
+        public AuthService(JsCookiesService jsCookiesService )
+        {
+            _jsCookiesService = jsCookiesService;
+        }
+
         public string? AccessToken => _accessToken;
 
         // Set or update the access token
@@ -66,6 +73,26 @@ namespace Frontend.Services
                 return false;
             }
         }
+
+        public async Task<UserLoginDto?> LoginAsync(UserLoginDto login)
+        {
+            try
+            {
+                var dto = await _jsCookiesService.PostAsync<UserLoginDto>(
+                        "https://localhost:5206/api/login",
+                        login
+                    );
+
+                Console.WriteLine("Login successful!");
+                return dto;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Login failed: {ex.Message}");
+                return null;
+            }
+        }
+
 
     }
 }

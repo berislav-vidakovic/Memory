@@ -118,7 +118,8 @@ public class UsersPageViewModel : ComponentBase
             PwdHashed = HashedPwd
         };
 
-        UserLoginDto? dtoResponse= await UserService.LoginAsync(loginBody);
+        //UserLoginDto? dtoResponse= await UserService.LoginAsync(loginBody);
+        UserLoginDto? dtoResponse= await AuthService.LoginAsync(loginBody);
         if (dtoResponse != null)
         {
             CurrentUserId = dtoResponse.Id;
