@@ -20,7 +20,7 @@ namespace Frontend
             NotifyStateChanged();
         }
 
-        public void SetCurrentUser(int userId)
+        public void SetCurrentUser(int? userId)
         {
             CurrentUserId = userId;
             NotifyStateChanged();

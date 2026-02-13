@@ -66,12 +66,7 @@ public class UserApiService
             Console.WriteLine($"Edit user failed: {response.StatusCode}");
             return null;
         }
-    }
-
-    public async Task LoginRefreshAsync()
-    {
-        await _js.InvokeVoidAsync("sendRequestPOST", "https://localhost:5206/api/loginrefresh", null);
-    }
+    }  
 
 
  

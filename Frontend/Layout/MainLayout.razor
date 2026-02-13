@@ -1,4 +1,5 @@
 ﻿@using Frontend.Services
+@using Shared.DTOs
 @inherits LayoutComponentBase
 @inject NotificationService NotificationService
 @inject AuthService AuthService
@@ -29,13 +30,26 @@
         Console.WriteLine("App is starting ... ");
 
         await NotificationService.StartAsync();
+        Console.WriteLine("Notification Service started... ");
+
         //await AuthService.RestoreSessionAsync(Http);
         if (!AppState.Users.Any())
         {
             var users = await UserService.GetUsersAsync();
             AppState.SetUsers(users);
         }
+        Console.WriteLine("Users loaded ... ");
 
+
+        UserLoginDto? userDto = await AuthService.RestoreSessionAsync();
+        if (userDto != null)
+        {
+            AppState.SetCurrentUser(userDto.Id);
+            Console.WriteLine("Session restored ... ");
+
+        }
+        else
+            Console.WriteLine("...Refresh check failed!");
 
     }
    

@@ -10,7 +10,7 @@ public class JsCookiesService
         _js = js;
     }
 
-    public async Task<T?> PostAsync<T>(string url, object body)
+    public async Task<T?> PostAsync<T>(string url, object? body)
     {
         return await _js.InvokeAsync<T>(
             "sendRequestPOST",

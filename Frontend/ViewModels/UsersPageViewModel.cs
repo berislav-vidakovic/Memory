@@ -26,7 +26,9 @@ public class UsersPageViewModel : ViewModelBase
 
 
     public List<User> AllUsers => AppState.Users;
+    public int? CurrentUserId => AppState.CurrentUserId;
 
+    //public int? CurrentUserId { get; set; } = null;
 
     //public List<User> AllUsers { get; private set; } = new();
 
@@ -39,7 +41,6 @@ public class UsersPageViewModel : ViewModelBase
     public int? EditUserId{ get; set; }
     public string Password { get; set; } = string.Empty;
 
-    public int? CurrentUserId { get; set; } = null;
 
     public event Action? OnStateChanged;
     
@@ -49,9 +50,9 @@ public class UsersPageViewModel : ViewModelBase
         //var users = await UserService.GetUsersAsync();
         //AppState.SetUsers(users);
 
-        int? userId = AuthService.GetCurrentUserId();
-        if (userId != null)
-            CurrentUserId = userId;
+        //int? userId = AuthService.GetCurrentUserId();
+        //if (userId != null)
+          //  CurrentUserId = userId;
 
         OnStateChanged?.Invoke();
     }
@@ -127,7 +128,7 @@ public class UsersPageViewModel : ViewModelBase
         UserLoginDto? dtoResponse= await AuthService.LoginAsync(loginBody);
         if (dtoResponse != null)
         {
-            CurrentUserId = dtoResponse.Id;
+            AppState.SetCurrentUser(dtoResponse.Id);
             user.IsOnline = true;
 
             Console.WriteLine("Access Token from backend: " + dtoResponse.AccessToken);
@@ -164,7 +165,7 @@ public class UsersPageViewModel : ViewModelBase
         bool bSuccess = await UserService.LogoutAsync(logoutBody);
         if (bSuccess)
         {
-            CurrentUserId = null;
+            AppState.SetCurrentUser( null);
             user.IsOnline = false;
             AuthService.ClearAccessToken();
         }

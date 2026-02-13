@@ -140,7 +140,7 @@ app.MapPost("/api/deleteuser", async (IUserService userService, UserLoginDto use
 app.MapPost("/api/refreshcheck", async (IAuthService auth, HttpRequest request, HttpResponse response) =>
 {
     // Read refresh token from HttpOnly cookie
-    string? refreshToken = request.Cookies["refreshToken"];
+    string? refreshToken = request.Cookies["X-Refresh-Token"];
 
     ServiceResult result = await auth.RefreshCheck(refreshToken);
 
@@ -155,12 +155,12 @@ app.MapPost("/api/refreshcheck", async (IAuthService auth, HttpRequest request, 
       
 
     // Update HttpOnly cookie
-    response.Cookies.Append("refreshToken", result.refreshToken, new CookieOptions
+    response.Cookies.Append("X-Refresh-Token", result.refreshToken, new CookieOptions
     {
         HttpOnly = true,
-        Secure = false,
+        Secure = true, // SameSite=None, Secure=true is mandatory
         SameSite = SameSiteMode.None,
-        Expires = result.tokenExpiration
+        Expires = DateTime.UtcNow.AddDays(7)
     });
 
     return Results.Ok(result.loginUser);
@@ -168,20 +168,7 @@ app.MapPost("/api/refreshcheck", async (IAuthService auth, HttpRequest request, 
 });
 
 
-app.MapPost("/api/loginrefresh", async (IAuthService auth, HttpResponse response) =>
-{
-    // Set refresh token cookie
-    var refreshToken = Guid.NewGuid().ToString();
-    response.Cookies.Append("X-Refresh-Token", refreshToken, new CookieOptions
-    {
-        HttpOnly = true,
-        Secure = false,
-        SameSite = SameSiteMode.None,
-        Expires = DateTime.UtcNow.AddDays(7)
-    });
 
-    return Results.Ok();
-});
 
 app.MapPost("/api/login", async (IAuthService auth, HttpResponse response, UserLoginDto login) =>
 {

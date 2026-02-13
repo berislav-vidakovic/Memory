@@ -74,6 +74,27 @@ namespace Frontend.Services
             }
         }
 
+        public async Task<UserLoginDto?> RestoreSessionAsync()
+        {
+            try
+            {
+                var res = await _jsCookiesService.PostAsync<UserLoginDto>(
+                        "https://localhost:5206/api/refreshcheck", null );
+
+                Console.WriteLine("RefreshCheck done!");
+                if( res != null )
+                {
+                    SetAccessToken(res.AccessToken);
+                }
+                return res;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"RefreshCheck failed: {ex.Message}");
+                return null;
+            }
+        }
+
         public async Task<UserLoginDto?> LoginAsync(UserLoginDto login)
         {
             try
