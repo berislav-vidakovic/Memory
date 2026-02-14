@@ -4,7 +4,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Backend.Services
+namespace AuthServer.Services
 {
     public class TokenService
     {

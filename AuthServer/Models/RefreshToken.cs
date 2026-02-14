@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Backend.Models
+namespace AuthServer.Models
 {
     [Table("refresh_tokens")]
     public class RefreshToken

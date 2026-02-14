@@ -14,8 +14,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 // Add DbContext
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer("Server=barryonweb.com,1433;Database=Memory;User Id=SA;Password=Abc1234!;TrustServerCertificate=True;"));
+var connectionString = builder.Configuration["Sites:Dev"];
+builder.Services.AddDbContext<AppDbContext>(options =>options.UseSqlServer(connectionString));
 
 
 // Add services to the container.
@@ -31,9 +31,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSignalR();
 
-builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<TokenService>();
 
 builder.Services.AddCors(options =>
 {
@@ -140,75 +138,6 @@ app.MapPost("/api/deleteuser", async (IUserService userService, UserLoginDto use
     };
 });
 
-app.MapPost("/api/refreshcheck", async (IAuthService auth, HttpRequest request, HttpResponse response) =>
-{
-    // Read refresh token from HttpOnly cookie
-    string? refreshToken = request.Cookies["X-Refresh-Token"];
-
-    ServiceResult result = await auth.RefreshCheck(refreshToken);
-
-    if (!result.Success)
-        switch (result.Error)
-        {
-            case "InvalidRefreshToken":
-                return Results.Unauthorized();            
-            case "UserOffline":
-                return Results.Conflict();
-            default:
-                return Results.BadRequest();
-        };      
-
-    // Update HttpOnly cookie
-    auth.AppendCookie(response, "X-Refresh-Token", result.refreshToken, DateTime.UtcNow.AddDays(7));
-
-    return Results.Ok(result.loginUser);
-
-});
-
-
-
-
-app.MapPost("/api/login", async (IAuthService auth, HttpResponse response, UserLoginDto login) =>
-{
-    var result = await auth.LoginAsync(login);
-
-    if (!result.Success)
-        switch (result.Error)
-        {
-            case "UserNotFound":
-                return Results.NotFound();
-            case "InvalidPassword":
-                return Results.Unauthorized();
-            default:
-                return Results.BadRequest();
-        };
-
-    // Set refresh token cookie
-    var refreshToken = await auth.GetRefreshTokenForUser(login.Id); // method to get latest token
-    auth.AppendCookie(response, "X-Refresh-Token", refreshToken, DateTime.UtcNow.AddDays(7));
-
-    return Results.Ok(result.loginUser);
-});
-
-
-app.MapPost("/api/logout", async (IAuthService auth, HttpResponse response, UserLoginDto login) =>
-{
-    var result = await auth.LogoutAsync(login);
-
-    if (result.Success)
-    {
-        auth.AppendCookie(response, "X-Refresh-Token", "", DateTime.UtcNow.AddDays(-1));
-        return Results.Ok(login);
-    }
-
-    switch (result.Error)
-    {
-        case "UserNotFound":
-            return Results.NotFound();
-        default:
-            return Results.BadRequest();
-    };
-});
 
 
 var summaries = new[]

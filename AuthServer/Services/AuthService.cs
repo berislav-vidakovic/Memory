@@ -1,27 +1,24 @@
 ﻿using Azure.Core;
-using Backend.Data;
-using Backend.Hubs;
-using Backend.Models;
+using AuthServer.Data;
+using AuthServer.Models;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Shared;
 using Shared.DTOs;
 
-namespace Backend.Services;
+namespace AuthServer.Services;
 
 public class AuthService : IAuthService
 {
     private readonly AppDbContext _db;
 
-    private readonly IHubContext<NotificationHub> _hub;
 
     private TokenService _tokenService;
 
-    public AuthService(AppDbContext db, IHubContext<NotificationHub> hub, TokenService tokenService )
+    public AuthService(AppDbContext db, TokenService tokenService )
     {
         _db = db;
-        _hub = hub;
         _tokenService = tokenService;
     }
 
@@ -98,7 +95,7 @@ public class AuthService : IAuthService
         user.IsOnline = true;
         await _db.SaveChangesAsync();
 
-        await _hub.Clients.All.SendAsync("UserLoggedIn", user.Id);
+        //await _hub.Clients.All.SendAsync("UserLoggedIn", user.Id);
 
         // Generate tokens
         var accessToken = _tokenService.GenerateAccessToken(user.Id);
@@ -176,7 +173,7 @@ public class AuthService : IAuthService
 
         Console.WriteLine($"User '{user.Login}' set to offline");
 
-        await _hub.Clients.All.SendAsync("UserLoggedOut", user.Id);
+        //await _hub.Clients.All.SendAsync("UserLoggedOut", user.Id);
 
         return ServiceResult.Ok();
     }

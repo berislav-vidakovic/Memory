@@ -42,7 +42,7 @@ namespace Frontend.Services
             try
             {
                 var res = await _jsCookiesService.PostAsync<UserLoginDto>(
-                        "https://localhost:5206/api/refreshcheck", null );
+                        "https://localhost:7200/api/refreshcheck", null );
 
                 Console.WriteLine("RefreshCheck done!");
                 if( res != null )
@@ -63,7 +63,7 @@ namespace Frontend.Services
             try
             {
                 var dtoResponse = await _jsCookiesService.PostAsync<UserLoginDto>(
-                        "https://localhost:5206/api/login",
+                        "https://localhost:7200/api/login",
                         login
                     );
                 if (dtoResponse != null)
@@ -88,7 +88,7 @@ namespace Frontend.Services
             try
             {
                 var dto = await _jsCookiesService.PostAsync<UserLoginDto>(
-                        "https://localhost:5206/api/logout",
+                        "https://localhost:7200/api/logout",
                         login
                     );
 

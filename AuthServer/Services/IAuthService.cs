@@ -1,6 +1,6 @@
 ﻿using Shared.DTOs;
 
-namespace Backend.Services
+namespace AuthServer.Services
 {
     public interface IAuthService
     {
