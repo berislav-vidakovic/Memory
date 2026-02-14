@@ -1,6 +1,7 @@
 ﻿@page "/usersPage"
 
 
+@using Frontend.Common
 @using Frontend.Components
 @using Frontend.Models
 @using Frontend.Services
@@ -38,7 +39,7 @@ else
 <button class="btn btn-primary mt-2" @onclick=Logout disabled=@(CurrentUserId == null)>
         Logout
     </button>
-<button class="btn btn-primary mt-2" @onclick="() => EditUser(CurrentUserId)" disabled=@(CurrentUserId == null)>
+<button class="btn btn-primary mt-2" @onclick="() => { if(CurrentUserId.HasValue) EditUserForm(CurrentUserId.Value); }" disabled=@(CurrentUserId == null)>
         Edit User
     </button>
     <button class="btn btn-primary mt-2" @onclick="Register">
@@ -83,16 +84,6 @@ else
              OnConfirm="HandleLoginConfirm"
              OnCancel="LoginCancel"/>
 
-@if (EditUserId != null || CreateNewUser )
-{
-    <UserDialog SelectedUser="@(CreateNewUser ? null : AllUsers!.FirstOrDefault(u => u.Id == EditUserId))" 
-                ShowEditUserDialog="@ShowUserDialog"    
-                OnSubmit="@(CreateNewUser? HandleUserCreate : HandleUserUpdate)"
-                OnCancel="CloseDialog" 
-                OnDelete="DeleteUser" 
-                NewUser="@CreateNewUser"
-                UpdatePassword="false"/>
-}
 
 
 
@@ -116,7 +107,7 @@ else
 
     <div class="dock-panel">
         <div class="dock-header">
-            <h5>Edit User</h5>
+            <h5>@GetUserFormHeader()</h5>
             <button class="btn btn-sm btn-secondary" @onclick="CloseDockedEditor">X</button>
         </div>
 
@@ -125,7 +116,8 @@ else
                   AllUsers="@AllUsers"
                   CurrentUserId="@CurrentUserId"
                   UpdatePassword="false" 
-                  OnClose="CloseDockedEditor" />
+                  OnClose="CloseDockedEditor"
+                  Mode="CreateNewUser ? UserFormMode.NEW : UserFormMode.EDIT" />
     </div>
 }
 
@@ -139,6 +131,13 @@ else
     private double ContextMenuY;
     private int ContextMenuUserId;
     private bool CreateNewUser = false;
+
+    private string GetUserFormHeader()
+    {
+        if (CreateNewUser )
+            return "Create New User";
+        return "Edit User";
+    }
 
     private void CloseDockedEditor()
     {
@@ -160,6 +159,7 @@ else
     private void EditUserForm(int userId)
     {
         ShowContextMenu = false;
+        CreateNewUser = false;
 
         Console.WriteLine("EditUserForm called for userId=" + userId);
 
@@ -362,10 +362,18 @@ else
 
     private async Task Register()
     {
+        /*
         Console.WriteLine("Register clicked");
         CreateNewUser = true;
         ShowUserDialog = true;
+        StateHasChanged();*/
+        Console.WriteLine("Create User called " );
+        CreateNewUser = true;
+
+        DockedUserId = 0;
+        ShowDockedEditor = true;
         StateHasChanged();
+
     }
 
     private async Task HandleLoginConfirm((int id, string password) data)

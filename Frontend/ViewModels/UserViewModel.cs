@@ -8,7 +8,7 @@ using Shared.DTOs;
 namespace Frontend.ViewModels;
 
 
-public class UserViewModel : ComponentBase
+public class UserViewModel : ViewModelBase
 {
     [Inject]
     public UserApiService UserService { get; set; } = default!;
@@ -28,6 +28,12 @@ public class UserViewModel : ComponentBase
 
 
     public event Action? OnStateChanged;
+
+    protected override void OnAppStateChanged()
+    {
+        OnStateChanged?.Invoke();
+    }
+
 
     public void OpenEditUserDialog()
     {

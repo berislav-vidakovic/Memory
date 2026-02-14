@@ -1,4 +1,5 @@
-﻿@using Frontend.Models
+﻿@using Frontend.Common
+@using Frontend.Models
 @using Frontend.ViewModels
 @using Microsoft.AspNetCore.Components
 @using Shared
@@ -14,49 +15,53 @@
             <label class="mt-2">Full Name</label>
             <input class="form-control" type="text" @bind="LocalUser.FullName" disabled="@IsLoading" />
 
-            <div class="form-check mt-3">
-                <input class="form-check-input"
-                        type="checkbox"
-                        id="updatePasswordCheck"
-                        @bind="UpdatePassword"
-                        disabled="@IsLoading" />
-                <label class="form-check-label" for="updatePasswordCheck">
-                    Update password
-                </label>
-            </div>
+            @if( @Mode == @UserFormMode.EDIT )
+            {
+                <div class="form-check mt-3">
+                    <input class="form-check-input"
+                            type="checkbox"
+                            id="updatePasswordCheck"
+                            @bind="UpdatePassword"
+                            disabled="@IsLoading" />
+                    <label class="form-check-label" for="updatePasswordCheck">
+                        Update password
+                    </label>
+                </div>
+            }
 
             @if (@UpdatePassword)
             {
-
                 <label class="mt-2">Current Password</label>
                 <div class="input-group">
                     <input class="form-control"
-                            type=@(showPassword[PwdField.Current] ? "text" : "password")
-                            @bind="LocalUser.CurrentPassword" 
-                            disabled="@IsLoading" />
+                    type=@(showPassword[PwdField.Current] ? "text" : "password")
+                    @bind="LocalUser.CurrentPassword" 
+                    disabled="@IsLoading" />
 
                     <button type="button"
-                            class="btn btn-outline-secondary"
-                            @onclick='() => TogglePasswordVisibility(PwdField.Current)'
-                            tabindex="-1"
-                            disabled="@IsLoading">
+                    class="btn btn-outline-secondary"
+                    @onclick='() => TogglePasswordVisibility(PwdField.Current)'
+                    tabindex="-1"
+                    disabled="@IsLoading">
                         <i class="bi @(showPassword[PwdField.Current] ? "bi-eye-slash" : "bi-eye")"></i>
                     </button>
                 </div>
+            }
 
-
+            @if (@UpdatePassword || @Mode == @UserFormMode.NEW )
+            {
                 <label class="mt-2">New Password</label>
                 <div class="input-group">
                     <input class="form-control"
-                            type=@(showPassword[PwdField.New] ? "text" : "password")
-                            @bind="LocalUser.NewPassword" 
-                            disabled="@IsLoading" />
+                    type=@(showPassword[PwdField.New] ? "text" : "password")
+                    @bind="LocalUser.NewPassword" 
+                    disabled="@IsLoading" />
 
                     <button type="button"
-                            class="btn btn-outline-secondary"
-                            @onclick='() => TogglePasswordVisibility(PwdField.New)'
-                            tabindex="-1"
-                            disabled="@IsLoading">
+                    class="btn btn-outline-secondary"
+                    @onclick='() => TogglePasswordVisibility(PwdField.New)'
+                    tabindex="-1"
+                    disabled="@IsLoading">
                         <i class="bi @(showPassword[PwdField.New] ? "bi-eye-slash" : "bi-eye")"></i>
                     </button>
                 </div>
@@ -65,18 +70,18 @@
                 <label class="mt-2">Confirm Password</label>
                 <div class="input-group">
                     <input class="form-control"
-                            type=@(showPassword[PwdField.Confirm] ? "text" : "password")
-                            @bind="LocalUser.ConfirmPassword" 
-                            disabled="@IsLoading" />
+                    type=@(showPassword[PwdField.Confirm] ? "text" : "password")
+                    @bind="LocalUser.ConfirmPassword" 
+                    disabled="@IsLoading" />
 
                     <button type="button"
-                            class="btn btn-outline-secondary"
-                            @onclick='() => TogglePasswordVisibility(PwdField.Confirm)'
-                            tabindex="-1"
-                            disabled="@IsLoading">
+                    class="btn btn-outline-secondary"
+                    @onclick='() => TogglePasswordVisibility(PwdField.Confirm)'
+                    tabindex="-1"
+                    disabled="@IsLoading">
                         <i class="bi @(showPassword[PwdField.Confirm] ? "bi-eye-slash" : "bi-eye")"></i>
                     </button>
-                </div>
+                </div>        
             }
         </div>
         </div>
@@ -105,6 +110,9 @@
 
 
 @code {
+    [Parameter]
+    public UserFormMode Mode { get; set; }  // Accept the enum value
+
     [Parameter] public EventCallback OnClose { get; set; }
 
     [Parameter]
@@ -127,6 +135,38 @@
     private string? InfoTitle { get; set; }
 
     private string? InfoMessage { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        switch (Mode)
+        {
+            case UserFormMode.EDIT:
+                {
+                    if (SelectedUser == null)
+                        return;
+
+                    // Clone user to local object
+                    LocalUser = new EditUser
+                {
+                    Id = SelectedUser.Id,
+                    Login = SelectedUser.Login,
+                    FullName = SelectedUser.FullName
+                };
+
+                    //Console.WriteLine("Clone no good:" +
+                    //  Object.ReferenceEquals(SelectedUser, LocalUser));
+                    break;
+                }
+            case UserFormMode.NEW:
+                {
+                    Console.WriteLine("new user Form");
+                    LocalUser = new EditUser();
+                    break;
+                }
+            default:
+                break;
+        }
+    }
 
     private async Task DeleteUser(EditUser edited)
     {
@@ -157,6 +197,34 @@
 
         await OnClose.InvokeAsync();
     }
+
+
+    private async Task HandleUserCreate(EditUser edited)
+    {        
+        UserDto dtoUserRequest = new()
+        {
+            Id = 0,
+            FullName = edited.FullName,
+            Login = edited.Login,
+            HashedPwd = HashUtil.HashClient(edited.NewPassword)
+        };
+        UserDto? dtoUserResponse = await UserService.CreateUserAsync(dtoUserRequest);
+        Console.WriteLine("User created? " + dtoUserResponse != null);
+        if (dtoUserResponse != null) // in Response there is Id set on server        
+        {
+            Console.WriteLine("User created! Id= " + dtoUserResponse.Id );
+            
+            if (!AllUsers!.Any(u => u.Id == dtoUserResponse.Id)) // might be added by SignalR notification already
+            {
+                User user = new User(dtoUserResponse);
+                AllUsers!.Add(user);
+            }
+        }
+
+        //ShowUserDialog = false;
+    }
+
+
 
     private async Task HandleUserUpdate(EditUser edited)
     {
@@ -212,23 +280,7 @@
         ShowInfoDialog = true;
     }
 
-    protected override void OnParametersSet()
-    {
-        Console.WriteLine("Called OnParametersSet - clone user");
-        if (SelectedUser == null)
-            return;
 
-        // Clone user to local object
-        LocalUser = new EditUser
-        {
-            Id = SelectedUser.Id,
-            Login = SelectedUser.Login,
-            FullName = SelectedUser.FullName
-        };
-
-        Console.WriteLine( "Clone no good:" + 
-            Object.ReferenceEquals(SelectedUser, LocalUser) );
-    }
 
     public async Task Cancel()
         => await OnClose.InvokeAsync();
@@ -247,25 +299,45 @@
             return false;
         }
 
-        if (!UpdatePassword)
+        return ValidatePasswords();
+    }
+
+    private bool ValidatePasswords()
+    {
+        if (Mode == UserFormMode.EDIT && !UpdatePassword )
             return true;
 
-        if( string.IsNullOrEmpty(LocalUser.CurrentPassword ) || 
-            string.IsNullOrEmpty(LocalUser.NewPassword) ||
-            string.IsNullOrEmpty(LocalUser.ConfirmPassword) )
+
+        if (string.IsNullOrEmpty(LocalUser.NewPassword) ||
+            string.IsNullOrEmpty(LocalUser.ConfirmPassword))
         {
             RaiseInfoDlg("Password field Error", "No Password field can be empty!");
             return false;
         }
 
-        if( LocalUser.NewPassword != LocalUser.ConfirmPassword )
+        if (LocalUser.NewPassword != LocalUser.ConfirmPassword)
         {
             RaiseInfoDlg("New Password mismatch", "New Password and Confirm Password do not match!");
             return false;
         }
 
+        if (Mode == UserFormMode.EDIT && string.IsNullOrEmpty(LocalUser.CurrentPassword))
+        {
+            RaiseInfoDlg("Password field Error", "No Password field can be empty!");
+            return false;
+        }
 
         return true;
+    }
+
+
+    private async Task HandleSubmission(EditUser LocalUser)
+    {
+        if (Mode == UserFormMode.EDIT)
+            await HandleUserUpdate(LocalUser);
+        else if (Mode == UserFormMode.NEW)
+            await HandleUserCreate(LocalUser);
+
     }
 
     public async Task Submit() 
@@ -280,7 +352,7 @@
             StateHasChanged();
 
             LocalUser.IsPasswordUpdated = UpdatePassword;
-            await HandleUserUpdate(LocalUser);
+            await HandleSubmission(LocalUser);
         }
         finally
         {
