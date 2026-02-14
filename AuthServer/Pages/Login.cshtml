@@ -5,8 +5,8 @@
 
 <form method="post">
     <div>
-        <label>Username</label>
-        <input asp-for="Username" />
+        <label>User Id</label>
+        <input asp-for="Id" />
     </div>
 
     <div>
@@ -16,3 +16,5 @@
 
     <button type="submit">Login</button>
 </form>
+
+<div asp-validation-summary="All"></div>
