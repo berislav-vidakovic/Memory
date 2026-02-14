@@ -13,6 +13,7 @@
 
 @inject Frontend.Services.UserApiService UserService1
 @inject NotificationService NotificationService
+@inject NavigationManager Nav
 
 
 
@@ -121,6 +122,14 @@ else
     </div>
 }
 
+@if( ShowLoginOptions )
+{
+    <LoginOptionDialog  Show="@ShowLoginOptions"
+                        Title="Select Login option"
+                        OnConfirm="ConfirmLoginOption" 
+                        OnCancel="CloseLoginOptionDlg" />
+}
+
 
 
 @code {
@@ -131,6 +140,28 @@ else
     private double ContextMenuY;
     private int ContextMenuUserId;
     private bool CreateNewUser = false;
+    private bool ShowLoginOptions = false;
+
+    private void ConfirmLoginOption(LoginType type )
+    {
+        if( type == LoginType.Local )
+        {
+            Console.WriteLine("Local login");
+            ShowLoginDialog = true;
+            //OnStateChanged?.Invoke();
+        }
+        else if( type == LoginType.Oidc)
+        {
+            Console.WriteLine("OIDC login");
+            Nav.NavigateTo("https://localhost:7200/Login", true);
+        }
+        CloseLoginOptionDlg();
+    }
+
+    private void CloseLoginOptionDlg()
+    {
+        ShowLoginOptions = false;
+    }
 
     private string GetUserFormHeader()
     {
@@ -367,7 +398,7 @@ else
         CreateNewUser = true;
         ShowUserDialog = true;
         StateHasChanged();*/
-        Console.WriteLine("Create User called " );
+                Console.WriteLine("Create User called " );
         CreateNewUser = true;
 
         DockedUserId = 0;
@@ -384,4 +415,9 @@ else
         await LoginOk();
     }
 
+    public void OpenLoginDialog()
+    {
+        ShowLoginOptions = true;        
+        
+    }
 }

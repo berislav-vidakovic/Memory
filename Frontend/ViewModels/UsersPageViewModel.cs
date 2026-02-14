@@ -29,7 +29,7 @@ public class UsersPageViewModel : ViewModelBase
     public int? CurrentUserId => AppState.CurrentUserId;
 
 
-    public bool ShowLoginDialog { get; private set; }
+    public bool ShowLoginDialog { get; set; }
     public bool ShowUserDialog { get; set; }
 
 
@@ -51,11 +51,7 @@ public class UsersPageViewModel : ViewModelBase
     }
 
 
-    public void OpenLoginDialog()
-    {
-        ShowLoginDialog = true;
-        OnStateChanged?.Invoke();
-    }
+ 
 
     public void CloseLoginDialog()
     {

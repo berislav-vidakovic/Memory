@@ -33,6 +33,17 @@ public class AuthService : IAuthService
         });
     }
 
+    public async Task<User?> GetUserByLoginAsync(string login)
+    {
+        return await _db.Users.FirstOrDefaultAsync(u => u.Login == login);
+    }
+
+    public async Task UpdateUserAsync(User user)
+    {
+        _db.Users.Update(user);
+        await _db.SaveChangesAsync();
+    }
+
     public async Task<ServiceResult> RefreshCheck(string? refreshToken)
     {
         if (string.IsNullOrEmpty(refreshToken))
@@ -42,18 +53,12 @@ public class AuthService : IAuthService
         var tokenRecord = await _db.RefreshTokens
             .FirstOrDefaultAsync(t => t.Token == refreshToken);
 
-        if (tokenRecord == null)
-            return ServiceResult.Fail("InvalidRefreshToken");
-
-        // Check expiration
-        if (tokenRecord.ExpiresAt < DateTime.UtcNow)
+        if (tokenRecord == null || tokenRecord.ExpiresAt < DateTime.UtcNow)
             return ServiceResult.Fail("InvalidRefreshToken");
 
         User? user = await _db.Users.FirstOrDefaultAsync(u => u.Id == tokenRecord.UserId);
-        if (user == null)
-            return ServiceResult.Fail("InvalidUser");
-        if( !user.IsOnline )
-            return ServiceResult.Fail("UserOffline");
+        if (user == null) return ServiceResult.Fail("InvalidUser");
+        if( !user.IsOnline ) return ServiceResult.Fail("UserOffline");
 
         UserLoginDto login = new();
         login.Id = user.Id;

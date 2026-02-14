@@ -1,0 +1,73 @@
+﻿@using Frontend.Common
+@using Microsoft.AspNetCore.Components.Forms
+@using System.Threading.Tasks
+
+@if (Show)
+{
+    <div class="modal-backdrop"></div>
+
+    <div class="modal show d-block">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">@Title</h5>
+                    <button class="btn-close" @onclick="Close"></button>
+                </div>
+
+                <div class="modal-body">
+
+                    <InputRadioGroup @bind-Value="SelectedLoginType">
+
+                        <div class="form-check">
+                            <InputRadio class="form-check-input"
+                                        Value="LoginType.Local" />
+                            <label class="form-check-label">
+                                Local Login
+                            </label>
+                        </div>
+
+                        <div class="form-check mt-2">
+                            <InputRadio class="form-check-input"
+                                        Value="LoginType.Oidc" />
+                            <label class="form-check-label">
+                                OIDC Login
+                            </label>
+                        </div>
+
+                    </InputRadioGroup>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-primary"
+                            @onclick="Confirm"
+                            autofocus>
+                        Confirm
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public bool Show { get; set; }
+    [Parameter] public string Title { get; set; } = "Login Type";
+    [Parameter] public EventCallback<LoginType> OnConfirm { get; set; }
+    [Parameter] public EventCallback OnCancel { get; set; }
+
+    private LoginType SelectedLoginType { get; set; } = LoginType.Local;
+
+
+    private async Task Confirm()
+    {
+        await OnConfirm.InvokeAsync(SelectedLoginType); // passing argument        
+    }
+
+    private async Task Close()
+    {
+        await OnCancel.InvokeAsync();
+    }
+}

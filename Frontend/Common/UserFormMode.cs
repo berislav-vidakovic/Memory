@@ -6,4 +6,10 @@
         EDIT,
         CLONE
     }
+
+    public enum LoginType
+    {
+        Local,
+        Oidc
+    }
 }

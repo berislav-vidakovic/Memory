@@ -69,7 +69,7 @@ app.MapPost("/api/refreshcheck", async (IAuthService auth, HttpRequest request, 
 
 
 
-
+/*
 app.MapPost("/api/login", async (IAuthService auth, HttpResponse response, UserLoginDto login) =>
 {
     var result = await auth.LoginAsync(login);
@@ -91,7 +91,7 @@ app.MapPost("/api/login", async (IAuthService auth, HttpResponse response, UserL
     auth.AppendCookie(response, "X-Refresh-Token", refreshToken, DateTime.UtcNow.AddDays(7));
 
     return Results.Ok(result.loginUser);
-});
+}); */
 
 
 app.MapPost("/api/logout", async (IAuthService auth, HttpResponse response, UserLoginDto login) =>
