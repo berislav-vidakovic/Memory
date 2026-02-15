@@ -19,14 +19,15 @@ public class LoginModel : PageModel
     public int Id { get; set; }
 
     [BindProperty]
-    public string? Password { get; set; }
+    public string Password { get; set; } = "";
 
     public async Task<IActionResult> OnPost()
     {
+        Password ??= string.Empty;
         var dto = new UserLoginDto
         {
-            Id = Id,
-            PwdHashed = HashUtil.HashClient("")
+            Id = Id,            
+            PwdHashed = HashUtil.HashClient(Password)
         };
 
         var result = await _authService.LoginAsync(dto);

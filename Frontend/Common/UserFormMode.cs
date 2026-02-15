@@ -10,6 +10,7 @@
     public enum LoginType
     {
         Local,
-        Oidc
+        Centralized,
+        OIDC
     }
 }

@@ -19,19 +19,22 @@
 
                     <InputRadioGroup @bind-Value="SelectedLoginType">
 
+                        
+                        <br />
                         <div class="form-check">
                             <InputRadio class="form-check-input"
-                                        Value="LoginType.Local" />
+                                        Value="LoginType.Centralized" />
                             <label class="form-check-label">
-                                Local Login
+                                Centralized AuthServer Login
                             </label>
                         </div>
+                        <br />
 
                         <div class="form-check mt-2">
                             <InputRadio class="form-check-input"
-                                        Value="LoginType.Oidc" />
+                                        Value="LoginType.OIDC" />
                             <label class="form-check-label">
-                                OIDC Login
+                                OpenID Connect (OIDC) Login
                             </label>
                         </div>
 
@@ -58,7 +61,7 @@
     [Parameter] public EventCallback<LoginType> OnConfirm { get; set; }
     [Parameter] public EventCallback OnCancel { get; set; }
 
-    private LoginType SelectedLoginType { get; set; } = LoginType.Local;
+    private LoginType SelectedLoginType { get; set; } = LoginType.Centralized;
 
 
     private async Task Confirm()

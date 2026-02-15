@@ -37,6 +37,7 @@ namespace Frontend.Services
         public bool IsAuthenticated => !string.IsNullOrEmpty(_accessToken);
 
         // on browser refresh...
+        
         public async Task<UserLoginDto?> RestoreSessionAsync()
         {
             try
@@ -57,6 +58,7 @@ namespace Frontend.Services
                 return null;
             }
         }
+
 
         public async Task<UserLoginDto?> LoginAsync(UserLoginDto login)
         {

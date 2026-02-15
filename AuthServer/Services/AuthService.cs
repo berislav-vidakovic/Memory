@@ -100,7 +100,6 @@ public class AuthService : IAuthService
         user.IsOnline = true;
         await _db.SaveChangesAsync();
 
-        //await _hub.Clients.All.SendAsync("UserLoggedIn", user.Id);
 
         // Generate tokens
         var accessToken = _tokenService.GenerateAccessToken(user.Id);

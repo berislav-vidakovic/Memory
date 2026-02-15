@@ -125,7 +125,7 @@ else
 @if( ShowLoginOptions )
 {
     <LoginOptionDialog  Show="@ShowLoginOptions"
-                        Title="Select Login option"
+                        Title="Select Authentication option"
                         OnConfirm="ConfirmLoginOption" 
                         OnCancel="CloseLoginOptionDlg" />
 }
@@ -150,10 +150,14 @@ else
             ShowLoginDialog = true;
             //OnStateChanged?.Invoke();
         }
-        else if( type == LoginType.Oidc)
+        else if( type == LoginType.Centralized)
         {
-            Console.WriteLine("OIDC login");
+            Console.WriteLine("Centralized AuthServer login");
             Nav.NavigateTo("https://localhost:7200/Login", true);
+        }
+        else if( type == LoginType.OIDC )
+        {
+            Console.WriteLine("OIDC login not supported yet");
         }
         CloseLoginOptionDlg();
     }
