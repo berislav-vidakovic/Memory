@@ -1,4 +1,5 @@
-﻿using Shared.DTOs;
+﻿using AuthServer.Models;
+using Shared.DTOs;
 
 namespace AuthServer.Services
 {
@@ -9,6 +10,7 @@ namespace AuthServer.Services
         Task<string> GetRefreshTokenForUser(int userId);
         Task<ServiceResult> RefreshCheck(string? refreshToken);
         void AppendCookie(HttpResponse response, string key, string value, DateTimeOffset expires);
+        Task<List<User>> GetOfflineUsersAsync();
 
 
     }

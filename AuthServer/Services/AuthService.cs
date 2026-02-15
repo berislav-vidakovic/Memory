@@ -22,6 +22,14 @@ public class AuthService : IAuthService
         _tokenService = tokenService;
     }
 
+    public async Task<List<User>> GetOfflineUsersAsync() // return List<User>
+    {
+        var users = await _db.Users.Where(u => !u.IsOnline).ToListAsync();
+        return users;
+    }
+
+
+
     public void AppendCookie(HttpResponse response, string key, string value, DateTimeOffset expires)
     { 
         response.Cookies.Append(key, value, new CookieOptions
